@@ -1,6 +1,6 @@
 .navbar {
-  background-color: var(--bg-white);
-  height: 90px;
+  background-color: rgb(214, 204, 204);
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,13 +30,36 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  transition: color 0.3s ease;
+  gap: 15px;
+  transition: opacity 0.3s ease;
   letter-spacing: 1px;
 }
 
-.navbar-logo:hover {
-  color: var(--secondary-color);
+
+
+/* Logo Image Styling */
+.logo-image {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(4px 4px 10px rgb(0, 0, 0));
+}
+
+
+
+
+.navbar-logo:hover .logo-image {
+  transform: scale(1.05);
+}
+
+/* Logo Text - Optional (you can hide this if you want only logo) */
+.logo-text {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight:  700;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1px;
 }
 
 .nav-menu {
@@ -75,7 +98,7 @@
   transform: translateX(-50%);
   width: 0;
   height: 3px;
-  background-color:  var(--secondary-color);
+  background-color: var(--secondary-color);
   transition: width 0.3s ease;
 }
 
@@ -106,21 +129,25 @@
   }
 
   .navbar-container {
-    padding:  0 30px;
+    padding: 0 30px;
   }
 
-  .navbar-logo {
-    font-size: 1.5rem;
+  .logo-image {
+    height: 40px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
   }
 
   .nav-menu {
     flex-direction: column;
     width: 100%;
-    position: absolute;
+    position:  absolute;
     top: 80px;
     left: -100%;
     opacity: 0;
-    transition:  all 0.5s ease;
+    transition: all 0.5s ease;
     background-color: var(--bg-white);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     gap: 0;
@@ -149,5 +176,15 @@
 
   .menu-icon {
     display: block;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .logo-text {
+    display: none; /* Hide text on very small screens, show only logo */
+  }
+
+  .logo-image {
+    height: 35px;
   }
 }
