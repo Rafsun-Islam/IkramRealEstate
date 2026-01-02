@@ -1,5 +1,5 @@
 .navbar {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   height: 70px;
@@ -12,10 +12,10 @@
   width: 100%;
   z-index: 999;
   transition: all 0.3s ease;
-  border-bottom: 1px solid rgba(201, 169, 97, 0.3);
+  border-bottom:  1px solid rgba(201, 169, 97, 0.3);
 }
 
-/* Scrolled State - Darker background */
+/* Scrolled State */
 .navbar.scrolled {
   background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
@@ -33,28 +33,28 @@
 .navbar-logo {
   color: #fff;
   text-decoration: none;
-  font-size: 1.8rem;
-  font-weight:  700;
-  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight:  500;
+  font-family: 'Cormorant Garamond', serif;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 15px;
   transition: opacity 0.3s ease;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .navbar-logo:hover {
   opacity: 0.8;
 }
 
-/* Logo Image Styling */
+/* Logo Image */
 .logo-image {
   height: 50px;
   width: auto;
   object-fit: contain;
   transition: transform 0.3s ease;
-  filter: brightness(0) invert(1); /* Makes logo white */
+  filter: brightness(0) invert(1);
 }
 
 .navbar-logo:hover .logo-image {
@@ -64,10 +64,10 @@
 /* Logo Text */
 .logo-text {
   color: #fff;
-  font-size:  1.5rem;
-  font-weight:  700;
-  font-family: 'Playfair Display', serif;
-  letter-spacing: 1px;
+  font-size: 1.4rem;
+  font-weight:  500;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 0.5px;
 }
 
 .nav-menu {
@@ -76,7 +76,7 @@
   text-align: center;
   margin: 0;
   padding:  0;
-  gap: 40px;
+  gap: 10px;
 }
 
 .nav-item {
@@ -86,16 +86,17 @@
 }
 
 .nav-links {
-  color: #fff;
+  color: rgba(255, 255, 255, 0.95);
   text-decoration: none;
-  padding: 0 1. 2rem;
+  padding: 0 1.2rem;
   height: 100%;
   display:  flex;
-  align-items:  center;
-  font-weight: 500;
+  align-items: center;
+  font-weight: 400;
+  font-size: 0.95rem;
   position: relative;
   transition: color 0.3s ease;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .nav-links::after {
@@ -105,8 +106,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 3px;
-  background-color: var(--secondary-color);
+  height: 2px;
+  background-color:  var(--secondary-color);
   transition: width 0.3s ease;
 }
 
@@ -121,7 +122,7 @@
 .menu-icon {
   display: none;
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.8rem;
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -151,11 +152,11 @@
   .nav-menu {
     flex-direction: column;
     width: 100%;
-    position: absolute;
+    position:  absolute;
     top: 80px;
     left: -100%;
     opacity: 0;
-    transition:  all 0.5s ease;
+    transition: all 0.5s ease;
     background-color: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -165,7 +166,7 @@
 
   .nav-menu.active {
     left: 0;
-    opacity: 1;
+    opacity:  1;
   }
 
   .nav-item {
@@ -179,6 +180,7 @@
     width: 100%;
     display: table;
     color: #fff;
+    font-size: 1rem;
   }
 
   .nav-links::after {
@@ -196,7 +198,7 @@
   }
 
   .logo-text {
-    display: none; /* Hide text on very small screens */
+    display: none;
   }
 
   .logo-image {

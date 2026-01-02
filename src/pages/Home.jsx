@@ -1,113 +1,113 @@
-import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
-import { 
-  FaBuilding, 
-  FaKey, 
-  FaHandshake, 
-  FaAward, 
-  FaMapMarkerAlt, 
-  FaBed, 
-  FaBath, 
+import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade, Pagination } from "swiper/modules";
+import {
+  FaBuilding,
+  FaKey,
+  FaHandshake,
+  FaAward,
+  FaMapMarkerAlt,
+  FaBed,
+  FaBath,
   FaRulerCombined,
   FaCheckCircle,
   FaPhoneAlt,
-  FaClock
-} from 'react-icons/fa';
+  FaClock,
+} from "react-icons/fa";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/effect-fade';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/pagination";
 
-import './Home.css';
+import "./Home.css";
 
 // Import your hero images (replace with your actual image paths)
 // If you don't have images yet, use the Unsplash URLs below
-import hero1 from '../assets/images/hero1.jpg';
-import hero2 from '../assets/images/hero2.jpg';
-import hero3 from '../assets/images/hero3.jpg';
-import hero4 from '../assets/images/hero4.jpg';
-import hero5 from '../assets/images/hero5.jpg';
+import hero1 from "../assets/images/hero1.jpg";
+import hero2 from "../assets/images/hero2.jpg";
+import hero3 from "../assets/images/hero3.jpg";
+import hero4 from "../assets/images/hero4.jpg";
+import hero5 from "../assets/images/hero5.jpg";
 
 const Home = () => {
   const heroImages = [hero1, hero2, hero3, hero4, hero5];
-  
+
   const featuredProjects = [
     {
       id: 1,
-      title: 'Azure Heights',
-      location: 'Gulshan 2, Dhaka',
-      status: 'ongoing',
-      statusText: 'Under Construction',
+      title: "Azure Heights",
+      location: "Gulshan 2, Dhaka",
+      status: "ongoing",
+      statusText: "Under Construction",
       beds: 3,
       baths: 3,
-      area: '1,850',
-      price: '1.85',
-      completion: '2026'
+      area: "1,850",
+      price: "1.85",
+      completion: "2026",
     },
     {
       id: 2,
-      title: 'Pearl Residency',
-      location: 'Banani, Dhaka',
-      status: 'completed',
-      statusText: 'Ready to Move',
+      title: "Pearl Residency",
+      location: "Banani, Dhaka",
+      status: "completed",
+      statusText: "Ready to Move",
       beds: 4,
       baths: 4,
-      area: '2,450',
-      price: '2.75',
-      completion: 'Ready'
+      area: "2,450",
+      price: "2.75",
+      completion: "Ready",
     },
     {
       id: 3,
-      title: 'Crown Towers',
-      location: 'Dhanmondi, Dhaka',
-      status: 'upcoming',
-      statusText: 'Launching Soon',
+      title: "Crown Towers",
+      location: "Dhanmondi, Dhaka",
+      status: "upcoming",
+      statusText: "Launching Soon",
       beds: 4,
       baths: 4,
-      area: '3,200',
-      price: '4.20',
-      completion: '2027'
-    }
+      area: "3,200",
+      price: "4.20",
+      completion: "2027",
+    },
   ];
 
   const features = [
     {
       icon: <FaBuilding />,
-      title: 'Premium Quality',
-      description: 'International standard construction with finest materials'
+      title: "Premium Quality",
+      description: "International standard construction with finest materials",
     },
     {
       icon: <FaKey />,
-      title: 'Instant Possession',
-      description: 'Ready flats available for immediate handover'
+      title: "Instant Possession",
+      description: "Ready flats available for immediate handover",
     },
     {
       icon: <FaHandshake />,
-      title:  'Trusted Brand',
-      description: 'Decade of excellence with 50+ delivered projects'
+      title: "Trusted Brand",
+      description: "Decade of excellence with 50+ delivered projects",
     },
     {
       icon: <FaAward />,
-      title: 'Award Winning',
-      description: 'Recognized nationally for architectural excellence'
-    }
+      title: "Award Winning",
+      description: "Recognized nationally for architectural excellence",
+    },
   ];
 
   const amenities = [
-    'Swimming Pool',
-    'Gymnasium',
-    'Children\'s Play Area',
-    'Community Hall',
-    'Rooftop Garden',
-    'Prayer Room',
-    'Basement Parking',
-    '24/7 Security',
-    'Power Backup',
-    'Elevator Service',
-    'CCTV Surveillance',
-    'Fire Safety System'
+    "Swimming Pool",
+    "Gymnasium",
+    "Children's Play Area",
+    "Community Hall",
+    "Rooftop Garden",
+    "Prayer Room",
+    "Basement Parking",
+    "24/7 Security",
+    "Power Backup",
+    "Elevator Service",
+    "CCTV Surveillance",
+    "Fire Safety System",
   ];
 
   return (
@@ -142,9 +142,15 @@ const Home = () => {
         <div className="hero-content-overlay">
           <div className="hero-content-container">
             <div className="hero-badge">Welcome to Excellence</div>
-            <h1>Discover Luxury Living<br />In Dhaka's Prime Locations</h1>
+            <h1>
+              Discover Luxury Living
+              <br />
+              In Dhaka's Prime Locations
+            </h1>
             <p className="hero-description">
-              Experience unparalleled elegance with our premium residential projects<br />
+              Experience unparalleled elegance with our premium residential
+              projects
+              <br />
               crafted for those who appreciate the finer things in life
             </p>
             <div className="hero-buttons">
@@ -190,7 +196,8 @@ const Home = () => {
 
       {/* About Preview Section */}
       <section className="about-preview">
-        <div className="container-wide">
+        <div className="container">
+        <div className="about-container">
           <div className="about-content-grid">
             <div className="about-image">
               <div className="image-wrapper">
@@ -200,23 +207,33 @@ const Home = () => {
                 <div className="about-overlay-badge">
                   <div className="badge-content">
                     <h3>15+</h3>
-                    <p>Years of<br />Excellence</p>
+                    <p>
+                      Years of
+                      <br />
+                      Excellence
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="about-text">
               <span className="section-label">About Ikram Real Estate</span>
-              <h2>Building Dreams,<br />Delivering Excellence</h2>
+              <h2>
+                Building Dreams,
+                <br />
+                Delivering Excellence
+              </h2>
               <p className="lead-text">
-                For over 15 years, Ikram Real Estate has been synonymous with quality, 
-                trust, and innovation in Bangladesh's real estate sector. 
+                For over 15 years, Ikram Real Estate has been synonymous with
+                quality, trust, and innovation in Bangladesh's real estate
+                sector.
               </p>
               <p>
-                We specialize in developing premium residential and commercial properties 
-                in Dhaka's most coveted locations.  Our commitment to architectural excellence, 
-                combined with world-class amenities and transparent business practices, has 
-                made us the preferred choice for discerning homebuyers. 
+                We specialize in developing premium residential and commercial
+                properties in Dhaka's most coveted locations. Our commitment to
+                architectural excellence, combined with world-class amenities
+                and transparent business practices, has made us the preferred
+                choice for discerning homebuyers.
               </p>
               <div className="about-highlights">
                 <div className="highlight-item">
@@ -241,6 +258,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
+          </div> 
         </div>
       </section>
 
@@ -252,7 +270,7 @@ const Home = () => {
             <h2>Exclusive Projects</h2>
             <p>Handpicked selection of our most prestigious developments</p>
           </div>
-          
+
           <div className="projects-grid">
             {featuredProjects.map((project) => (
               <div key={project.id} className="project-card">
@@ -264,7 +282,9 @@ const Home = () => {
                     {project.statusText}
                   </span>
                   <div className="project-overlay">
-                    <Link to="/projects" className="overlay-btn">View Details</Link>
+                    <Link to="/projects" className="overlay-btn">
+                      View Details
+                    </Link>
                   </div>
                 </div>
                 <div className="project-info">
@@ -286,7 +306,7 @@ const Home = () => {
                     </div>
                     <div className="feature-item">
                       <FaRulerCombined />
-                      <span>{project. area} sqft</span>
+                      <span>{project.area} sqft</span>
                     </div>
                   </div>
                   <div className="project-footer">
@@ -332,7 +352,9 @@ const Home = () => {
         <div className="container">
           <div className="cta-content">
             <h2>Ready to Own Your Dream Home?</h2>
-            <p>Visit our show apartments and experience luxury living firsthand</p>
+            <p>
+              Visit our show apartments and experience luxury living firsthand
+            </p>
             <div className="cta-buttons">
               <Link to="/contact" className="btn-cta-primary">
                 <span>Schedule a Visit</span>
@@ -358,7 +380,7 @@ const Home = () => {
               <div className="why-number">01</div>
               <h3>Prime Locations</h3>
               <p>
-                All properties strategically located in Dhaka's most prestigious 
+                All properties strategically located in Dhaka's most prestigious
                 neighborhoods with excellent connectivity and infrastructure.
               </p>
             </div>
@@ -366,15 +388,15 @@ const Home = () => {
               <div className="why-number">02</div>
               <h3>Legal Transparency</h3>
               <p>
-                Complete documentation, RAJUK approved plans, and clear title deeds 
-                ensuring absolute peace of mind for our clients.
+                Complete documentation, RAJUK approved plans, and clear title
+                deeds ensuring absolute peace of mind for our clients.
               </p>
             </div>
             <div className="why-item">
               <div className="why-number">03</div>
               <h3>Quality Assurance</h3>
               <p>
-                International standard construction using premium materials and 
+                International standard construction using premium materials and
                 world-class finishing under expert supervision.
               </p>
             </div>
@@ -382,7 +404,7 @@ const Home = () => {
               <div className="why-number">04</div>
               <h3>Timely Delivery</h3>
               <p>
-                Proven track record of completing projects on schedule with our 
+                Proven track record of completing projects on schedule with our
                 commitment to deadline adherence.
               </p>
             </div>
@@ -390,7 +412,7 @@ const Home = () => {
               <div className="why-number">05</div>
               <h3>Customer Support</h3>
               <p>
-                Dedicated after-sales service team to assist you throughout your 
+                Dedicated after-sales service team to assist you throughout your
                 homeownership journey.
               </p>
             </div>
@@ -398,7 +420,7 @@ const Home = () => {
               <div className="why-number">06</div>
               <h3>Flexible Payment</h3>
               <p>
-                Easy installment plans and bank loan facilities to make your 
+                Easy installment plans and bank loan facilities to make your
                 dream home affordable and accessible.
               </p>
             </div>
