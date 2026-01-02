@@ -1,5 +1,5 @@
 .navbar {
-  background-color: rgb(214, 204, 204);
+  background-color: rgba(14, 14, 14, 0.514);
   height: 80px;
   display: flex;
   justify-content: center;
@@ -22,7 +22,7 @@
 }
 
 .navbar-logo {
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
   text-decoration: none;
   font-size: 1.8rem;
   font-weight:  700;
@@ -55,7 +55,7 @@
 
 /* Logo Text - Optional (you can hide this if you want only logo) */
 .logo-text {
-  color: var(--primary-color);
+  color: white;
   font-size: 1.5rem;
   font-weight:  700;
   font-family: 'Playfair Display', serif;
@@ -78,9 +78,9 @@
 }
 
 .nav-links {
-  color: var(--text-dark);
+  color: whitesmoke;
   text-decoration: none;
-  padding: 0 1. 2rem;
+  padding: 0 1.2rem;
   height: 100%;
   display:  flex;
   align-items:  center;

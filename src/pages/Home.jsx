@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import { 
   FaBuilding, 
   FaKey, 
@@ -10,12 +12,27 @@ import {
   FaRulerCombined,
   FaCheckCircle,
   FaPhoneAlt,
-  FaEnvelope,
   FaClock
 } from 'react-icons/fa';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/pagination';
+
 import './Home.css';
 
+// Import your hero images (replace with your actual image paths)
+// If you don't have images yet, use the Unsplash URLs below
+import hero1 from '../assets/images/hero1.jpg';
+import hero2 from '../assets/images/hero2.jpg';
+import hero3 from '../assets/images/hero3.jpg';
+import hero4 from '../assets/images/hero4.jpg';
+import hero5 from '../assets/images/hero5.jpg';
+
 const Home = () => {
+  const heroImages = [hero1, hero2, hero3, hero4, hero5];
+  
   const featuredProjects = [
     {
       id: 1,
@@ -95,11 +112,35 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-background"></div>
-        <div className="hero-overlay">
-          <div className="hero-content">
+      {/* Hero Section with Background Slideshow */}
+      <section className="hero-background-slider">
+        {/* Background Slideshow */}
+        <Swiper
+          modules={[Autoplay, EffectFade]}
+          effect="fade"
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
+          loop={true}
+          speed={2000}
+          className="hero-background-swiper"
+        >
+          {heroImages.map((image, index) => (
+            <SwiperSlide key={index}>
+              <div className="hero-background-slide">
+                <img src={image} alt={`Ikram Real Estate ${index + 1}`} />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Dark Overlay */}
+        <div className="hero-overlay-dark"></div>
+
+        {/* Content Overlay */}
+        <div className="hero-content-overlay">
+          <div className="hero-content-container">
             <div className="hero-badge">Welcome to Excellence</div>
             <h1>Discover Luxury Living<br />In Dhaka's Prime Locations</h1>
             <p className="hero-description">
@@ -137,7 +178,7 @@ const Home = () => {
         <div className="container">
           <div className="features-grid">
             {features.map((feature, index) => (
-              <div key={index} className="feature-card" data-aos="fade-up" data-aos-delay={index * 100}>
+              <div key={index} className="feature-card">
                 <div className="feature-icon">{feature.icon}</div>
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
