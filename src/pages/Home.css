@@ -271,7 +271,7 @@
   }
 
   .hero-stats {
-    flex-direction: column;
+    
     gap: 25px;
     padding-top:  25px;
   }
@@ -1114,15 +1114,7 @@
 
 /* Laptop/Tablet Landscape (969px - 1200px) */
 @media screen and (max-width: 1200px) {
-  /* Hero Section */
-  .hero-content h1 {
-    font-size: 4rem;
-  }
-
-  .hero-stats {
-    gap: 40px;
-  }
-
+  
 
   .about-container {
     padding: 80px 40px;
@@ -1182,37 +1174,7 @@
 
 /* Tablet Portrait (769px - 968px) */
 @media screen and (max-width: 968px) {
-  /* Hero Section */
-  .hero {
-    min-height: 600px;
-  }
-
-  .hero-content h1 {
-    font-size: 3.2rem;
-  }
-
-  .hero-description {
-    font-size: 1.05rem;
-  }
-
-  .hero-badge {
-    font-size: 0.75rem;
-    padding: 8px 20px;
-  }
-
-  .hero-stats {
-    gap: 30px;
-    padding-top: 40px;
-  }
-
-  .hero-stat h3 {
-    font-size: 2.5rem;
-  }
-
-  .hero-stat p {
-    font-size: 0.85rem;
-  }
-
+  
   /* Containers */
   .container {
     padding: 80px 25px;
@@ -1304,57 +1266,7 @@
 
 /* Mobile Landscape (641px - 768px) */
 @media screen and (max-width: 768px) {
-  /* Hero Section */
-  .hero {
-    min-height: 550px;
-  }
-
-  .hero-content {
-    padding: 30px 20px;
-  }
-
-  .hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-
-  .hero-description {
-    font-size:  1rem;
-    margin-bottom: 35px;
-  }
-
-  .hero-description br {
-    display: none;
-  }
-
-  .hero-buttons {
-    margin-bottom: 50px;
-    gap: 15px;
-  }
-
-  .hero-stats {
-    gap: 25px;
-    padding-top: 30px;
-  }
-
-  .hero-stat {
-    min-width: auto;
-  }
-
-  .hero-stat h3 {
-    font-size: 2rem;
-  }
-
-  /* Buttons */
-  .btn-primary,
-  .btn-secondary,
-  .btn-outline,
-  .btn-cta-primary,
-  .btn-cta-secondary {
-    padding: 14px 30px;
-    font-size:  0.8rem;
-  }
-
+  
   /* Containers */
   .container{
     padding: 60px 20px;
@@ -1551,10 +1463,7 @@
 
 /* Mobile Portrait (481px - 640px) */
 @media screen and (max-width: 640px) {
-  .hero-content h1 {
-    font-size: 2.2rem;
-  }
-
+  
   .section-header h2 {
     font-size: 2rem;
   }
@@ -1570,48 +1479,7 @@
 
 /* Small Mobile (320px - 480px) */
 @media screen and (max-width: 480px) {
-  /* Hero Section */
-  .hero {
-    min-height: 500px;
-  }
-
-  .hero-content h1 {
-    font-size: 1.8rem;
-  }
-
-  .hero-description {
-    font-size: 0.95rem;
-  }
-
-  .hero-badge {
-    font-size: 0.7rem;
-    padding: 6px 15px;
-    letter-spacing: 2px;
-  }
-
-  .hero-stats {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .hero-stat h3 {
-    font-size: 2. 5rem;
-  }
-
-  /* Buttons - Full Width on Small Mobile */
-  .hero-buttons {
-    width: 100%;
-  }
-
-  .btn-primary,
-  .btn-secondary,
-  .btn-cta-primary,
-  .btn-cta-secondary {
-    width: 100%;
-    max-width: 100%;
-    padding: 14px 20px;
-  }
-
+  
   /* Containers */
   .container {
     padding: 50px 15px;
@@ -1759,10 +1627,7 @@
 
 /* Extra Small Mobile (below 320px) */
 @media screen and (max-width: 320px) {
-  .hero-content h1 {
-    font-size: 1.6rem;
-  }
-
+  
   .section-header h2 {
     font-size: 1.6rem;
   }
