@@ -14,7 +14,7 @@ const About = () => {
         <section className="content-section">
           <h2>Our Story</h2>
           <p>
-            Founded in 2010, Ikram Real Estate has grown to become one of Bangladesh's 
+            Founded in 2010, Ikram Real Estate has grown to become one of Barisal's 
             most trusted names in real estate development. Our journey began with a simple 
             vision: to create quality homes that families would be proud to call their own. 
           </p>
@@ -38,11 +38,11 @@ const About = () => {
           <div className="feature-list">
             <div className="feature-list-item">
               <FaCheckCircle />
-              <span>RAJUK Approved Projects</span>
+              <span>BDA Approved Projects</span>
             </div>
             <div className="feature-list-item">
               <FaCheckCircle />
-              <span>Prime Locations in Dhaka</span>
+              <span>Prime Locations in Barisal</span>
             </div>
             <div className="feature-list-item">
               <FaCheckCircle />
@@ -76,10 +76,7 @@ const About = () => {
             <h3>15+</h3>
             <p>Years Experience</p>
           </div>
-          <div className="stat-box">
-            <h3>20+</h3>
-            <p>Awards Won</p>
-          </div>
+          
         </section>
       </div>
     </div>
