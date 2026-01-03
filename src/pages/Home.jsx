@@ -15,15 +15,12 @@ import {
   FaClock,
 } from "react-icons/fa";
 
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/pagination";
 
 import "./Home.css";
 
-// Import your hero images (replace with your actual image paths)
-// If you don't have images yet, use the Unsplash URLs below
 import hero1 from "../assets/images/hero1.jpg";
 import hero2 from "../assets/images/hero2.jpg";
 import hero3 from "../assets/images/hero3.jpg";
@@ -145,7 +142,7 @@ const Home = () => {
             <h1>
               Discover Luxury Living
               <br />
-              In Dhaka's Prime Locations
+              In Barisal's Prime Locations
             </h1>
             <p className="hero-description">
               Experience unparalleled elegance with our premium residential
@@ -216,6 +213,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
+            
             <div className="about-text">
               <span className="section-label">About Ikram Real Estate</span>
               <h2>
@@ -230,7 +228,7 @@ const Home = () => {
               </p>
               <p>
                 We specialize in developing premium residential and commercial
-                properties in Dhaka's most coveted locations. Our commitment to
+                properties in Barisal's most coveted locations. Our commitment to
                 architectural excellence, combined with world-class amenities
                 and transparent business practices, has made us the preferred
                 choice for discerning homebuyers.
@@ -238,11 +236,11 @@ const Home = () => {
               <div className="about-highlights">
                 <div className="highlight-item">
                   <FaCheckCircle />
-                  <span>RAJUK Approved Projects</span>
+                  <span>BDA Approved Projects</span>
                 </div>
                 <div className="highlight-item">
                   <FaCheckCircle />
-                  <span>On-Time Delivery Guarantee</span>
+                  <span>On-Time Delivery</span>
                 </div>
                 <div className="highlight-item">
                   <FaCheckCircle />
@@ -359,7 +357,7 @@ const Home = () => {
               <Link to="/contact" className="btn-cta-primary">
                 <span>Schedule a Visit</span>
               </Link>
-              <a href="tel:+8801XXXXXXXXX" className="btn-cta-secondary">
+              <a href="tel:+8801712449365" className="btn-cta-secondary">
                 <FaPhoneAlt />
                 <span>Call Now</span>
               </a>
@@ -380,7 +378,7 @@ const Home = () => {
               <div className="why-number">01</div>
               <h3>Prime Locations</h3>
               <p>
-                All properties strategically located in Dhaka's most prestigious
+                All properties strategically located in Barisal's most prestigious
                 neighborhoods with excellent connectivity and infrastructure.
               </p>
             </div>
@@ -388,7 +386,7 @@ const Home = () => {
               <div className="why-number">02</div>
               <h3>Legal Transparency</h3>
               <p>
-                Complete documentation, RAJUK approved plans, and clear title
+                Complete documentation, BDA approved plans, and clear title
                 deeds ensuring absolute peace of mind for our clients.
               </p>
             </div>

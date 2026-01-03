@@ -145,176 +145,6 @@
   font-weight: 400;
 }
 
-/* Premium Buttons */
-.btn-primary,
-.btn-secondary,
-.btn-outline,
-.btn-small,
-.btn-cta-primary,
-.btn-cta-secondary,
-.btn-view-all,
-.overlay-btn {
-  position: relative;
-  padding: 18px 45px;
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  overflow: hidden;
-  font-family: 'Poppins', sans-serif;
-}
-
-.btn-primary {
-  background: var(--secondary-color);
-  color: #fff;
-  box-shadow: 0 15px 35px rgba(201, 169, 97, 0.4);
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
-}
-
-.btn-primary:hover::before {
-  left: 100%;
-}
-
-.btn-primary:hover {
-  background: var(--accent-color);
-  transform: translateY(-3px);
-  box-shadow: 0 20px 45px rgba(201, 169, 97, 0.5);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-}
-
-.btn-secondary::after {
-  content: '';
-  position: absolute;
-  top:  0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  transition: width 0.4s;
-  z-index: -1;
-}
-
-.btn-secondary:hover::after {
-  width: 100%;
-}
-
-.btn-secondary:hover {
-  border-color: #fff;
-  transform: translateY(-3px);
-}
-
-.btn-outline {
-  background: transparent;
-  color: var(--secondary-color);
-  border: 2px solid var(--secondary-color);
-  margin-top: 35px;
-  padding: 16px 40px;
-}
-
-.btn-outline::after {
-  content: '';
-  position: absolute;
-  top:  0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: var(--secondary-color);
-  transition: width 0.4s;
-  z-index: -1;
-}
-
-.btn-outline:hover::after {
-  width: 100%;
-}
-
-.btn-outline:hover {
-  color:  #fff;
-}
-
-.btn-small {
-  padding: 12px 28px;
-  background: var(--primary-color);
-  color: #fff;
-  font-size:  0.8rem;
-}
-
-.btn-small:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
-}
-
-.btn-cta-primary {
-  background: var(--secondary-color);
-  color: #fff;
-  box-shadow:  0 15px 35px rgba(201, 169, 97, 0.3);
-}
-
-.btn-cta-primary:hover {
-  background: var(--accent-color);
-  transform: translateY(-3px);
-  box-shadow: 0 20px 45px rgba(201, 169, 97, 0.4);
-}
-
-.btn-cta-secondary {
-  background:  transparent;
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-cta-secondary:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-3px);
-}
-
-.btn-view-all {
-  background: transparent;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-  padding: 16px 55px;
-}
-
-.btn-view-all:hover {
-  background: var(--primary-color);
-  color: #fff;
-}
-
-.overlay-btn {
-  background: var(--secondary-color);
-  color: #fff;
-  padding: 14px 35px;
-  font-size: 0.8rem;
-}
-
-.overlay-btn:hover {
-  background: #fff;
-  color: var(--primary-color);
-}
 
 /* ==================== RESPONSIVE DESIGN ==================== */
 
@@ -585,7 +415,9 @@
 }
 
 .btn-outline:hover {
-  color:  #fff;
+  color:  #ffffff;
+  transform: translateY(-2px);
+
 }
 
 .btn-small {
@@ -821,7 +653,7 @@
 
 .image-wrapper {
   position: relative;
-  padding: 0 30px 0 0;
+  padding: 0 30px 0;
   width: 100%;
 }
 
@@ -1217,7 +1049,7 @@
   font-size: 5rem;
   font-weight: 300;
   color: var(--secondary-color);
-  opacity: 0.15;
+  opacity: 0.65;
   font-family: 'Cormorant Garamond', serif;
   margin-bottom: 20px;
   line-height: 1;
@@ -1402,7 +1234,7 @@
     width: 100%;
     max-width: 700px;
     margin: 0 auto;
-    text-align: center;
+    text-align: left;
   }
 
 

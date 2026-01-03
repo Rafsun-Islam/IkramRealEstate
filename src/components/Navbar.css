@@ -134,7 +134,7 @@
 /* Mobile Responsive */
 @media screen and (max-width: 960px) {
   .navbar {
-    height: 80px;
+    height: 60px;
   }
 
   .navbar-container {
