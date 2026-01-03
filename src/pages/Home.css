@@ -653,7 +653,6 @@
 
 .image-wrapper {
   position: relative;
-  padding: 0 30px 0;
   width: 100%;
 }
 
@@ -665,20 +664,30 @@
   width: 100%;
   height: 100%;
   border:  2px solid var(--secondary-color);
-  transform: translate(-20px, -20px);
+  transform: translate(-2px, -2px);
 }
 
-.placeholder-about {
+.company-image-container {
   width: 100%;
   height:  600px;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size:  1.5rem;
   position: relative;
   z-index: 2;
+  overflow: hidden;
+  background: var(--bg-light);
+}
+
+.image-wrapper:hover .company-image {
+  transform: scale(1.05);
+}
+
+
+.company-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s ease;
 }
 
 .about-overlay-badge {
@@ -687,7 +696,7 @@
   right: -30px;
   background: var(--secondary-color);
   color: #fff;
-  padding:  40px;
+  padding:  25px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   z-index: 3;
 }
@@ -1123,7 +1132,7 @@
     gap: 60px;
   }
 
-  .placeholder-about {
+  .company-image-container {
     height: 500px;
   }
 
@@ -1237,10 +1246,6 @@
     text-align: left;
   }
 
-
-  .placeholder-about {
-    height: 450px;
-  }
 
   .about-overlay-badge {
     bottom: 30px;
@@ -1405,13 +1410,7 @@
   }
 
   /* About Section */
-  .image-wrapper {
-    padding: 20px;
-  }
 
-  .image-wrapper::before {
-    transform: translate(-10px, -10px);
-  }
 
   .about-container {
     padding: 60px 20px;
@@ -1426,20 +1425,6 @@
     margin: 0 auto;
   }
 
-  .image-wrapper {
-    padding: 20px;
-  }
-
-  .image-wrapper::before {
-    transform: translate(-10px, -10px);
-  }
-
-
-
-  .placeholder-about {
-    height: 350px;
-    font-size: 1.2rem;
-  }
 
   .about-overlay-badge {
     bottom: 20px;
@@ -1662,21 +1647,13 @@
     font-size: 0.9rem;
   }
 
-  /* About */
-  .placeholder-about {
-    height: 280px;
-    font-size:  1rem;
-  }
-
+  /* About Section */
 
   .about-content-grid {
     gap: 40px;
     padding: 0 15px;
   }
 
-  .image-wrapper {
-    padding: 15px;
-  }
 
   .about-overlay-badge {
     bottom: 15px;
@@ -1794,9 +1771,6 @@
     padding: 0 10px;
   }
 
-  .placeholder-about {
-    height: 250px;
-  }
 
   .about-text h2,
   .cta-content h2 {

@@ -27,6 +27,8 @@ import hero3 from "../assets/images/hero3.jpg";
 import hero4 from "../assets/images/hero4.jpg";
 import hero5 from "../assets/images/hero5.jpg";
 
+import companyImage from '../assets/images/company.jpg';
+
 const Home = () => {
   const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
@@ -198,8 +200,12 @@ const Home = () => {
           <div className="about-content-grid">
             <div className="about-image">
               <div className="image-wrapper">
-                <div className="placeholder-about">
-                  <span>Company Image</span>
+                <div className="company-image-container">
+                  <img 
+                    src={companyImage} 
+                    alt="Ikram Real Estate Office" 
+                    className="company-image"
+                  />
                 </div>
                 <div className="about-overlay-badge">
                   <div className="badge-content">
