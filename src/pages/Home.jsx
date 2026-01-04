@@ -21,11 +21,11 @@ import "swiper/css/pagination";
 
 import "./Home.css";
 
-import hero1 from "../assets/images/hero1.jpg";
-import hero2 from "../assets/images/hero2.jpg";
-import hero3 from "../assets/images/hero3.jpg";
-import hero4 from "../assets/images/hero4.jpg";
-import hero5 from "../assets/images/hero5.jpg";
+import hero1 from "../assets/images/hero1.webp";
+import hero2 from "../assets/images/hero2.webp";
+import hero3 from "../assets/images/hero3.webp";
+import hero4 from "../assets/images/hero4.webp";
+import hero5 from "../assets/images/hero5.webp";
 
 import companyImage from '../assets/images/company.jpg';
 
