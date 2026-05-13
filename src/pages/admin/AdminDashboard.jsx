@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaBuilding, FaImages, FaInbox } from "react-icons/fa";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import "./AdminDashboard.css";
 import SEO from "../../components/SEO";
 const AdminDashboard = () => {
-  usePageTitle("Admin Dashboard");
+  
   const cards = [
     {
       icon: <FaBuilding />,

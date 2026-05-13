@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaImage, FaImages, FaPlus, FaTrash } from "react-icons/fa";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import SEO from "../../components/SEO";
 import {
   deleteGalleryImage,
@@ -26,7 +26,7 @@ const getCleanGalleryTitle = (image) => {
 };
 
 const AdminGallery = () => {
-  usePageTitle("Admin Gallery");
+  
   const [galleryImages, setGalleryImages] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("General");
   const [activeFilter, setActiveFilter] = useState("All");

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 
 import { deleteProject, getProjects } from "../../services/projectService";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import "./AdminProjects.css";
 import SEO from "../../components/SEO";
 const getProjectImage = (project) => {
@@ -11,8 +11,7 @@ const getProjectImage = (project) => {
 };
 
 const AdminProjects = () => {
-  usePageTitle("Admin Projects");
-
+ 
   const [adminProjects, setAdminProjects] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -13,7 +13,7 @@ import {
   updateMessageStatus,
 } from "../../services/contactService";
 import SEO from "../../components/SEO";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import "./AdminMessages.css";
 
 const formatMessageDate = (timestamp) => {
@@ -26,8 +26,7 @@ const formatMessageDate = (timestamp) => {
 };
 
 const AdminMessages = () => {
-  usePageTitle("Client Messages");
-
+  
   const [messages, setMessages] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [deleteTarget, setDeleteTarget] = useState(null);

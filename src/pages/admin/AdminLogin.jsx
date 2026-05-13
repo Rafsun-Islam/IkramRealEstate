@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FaLock, FaSignInAlt } from "react-icons/fa";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import { auth } from "../../lib/firebase";
 import { useAuth } from "../../context/AuthContext";
 import "./AdminLogin.css";
 import SEO from "../../components/SEO";
 const AdminLogin = () => {
-  usePageTitle("Admin Login");
+  
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 

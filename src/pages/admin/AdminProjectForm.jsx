@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft, FaImage, FaSave, FaTimes } from "react-icons/fa";
-import { usePageTitle } from "../../hooks/usePageTitle";
+
 import { createSlug } from "../../utils/slugUtils";
 import { formatFileSize, optimizeImageToWebP } from "../../utils/imageUtils";
 import {
@@ -54,7 +54,6 @@ const AdminProjectForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
 
-  usePageTitle(isEditMode ? "Edit Project" : "Add Project");
   const [formData, setFormData] = useState(emptyProject);
   const [existingImages, setExistingImages] = useState([]);
   const [existingCoverImage, setExistingCoverImage] = useState("");
