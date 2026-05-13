@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import AppSEO from "./components/AppSEO";
 import { Analytics } from "@vercel/analytics/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -16,6 +17,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <AppSEO />
 
       <div className="app">
         <Navbar />
