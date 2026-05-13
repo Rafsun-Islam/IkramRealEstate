@@ -10,7 +10,8 @@ import {
   FaPhoneAlt,
   FaShieldAlt,
 } from "react-icons/fa";
-
+import SEO from "../components/SEO";
+import { createLocalBusinessSchema } from "../utils/seoSchemas";
 import { heroSlides } from "../data/heroData";
 import { siteData } from "../data/siteData";
 import {
@@ -91,6 +92,11 @@ const Home = () => {
 
   return (
     <>
+      <SEO
+        description="Ikram Real Estate helps families, investors, and businesses find reliable residential and commercial properties with trusted property guidance."
+        path="/"
+        structuredData={createLocalBusinessSchema()}
+      />
       <section
         className="home-hero"
         aria-label="Ikram Real Estate hero section"

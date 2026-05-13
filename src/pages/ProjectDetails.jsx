@@ -12,7 +12,8 @@ import {
   FaPhoneAlt,
   FaRulerCombined,
 } from "react-icons/fa";
-
+import SEO from "../components/SEO";
+import { createProjectSchema } from "../utils/seoSchemas";
 import { getProjectBySlug } from "../services/projectService";
 import { projects as fallbackProjects } from "../data/projectsData";
 import { siteData } from "../data/siteData";
@@ -115,6 +116,16 @@ const ProjectDetails = () => {
 
   return (
     <>
+      <SEO
+        title={project.title}
+        description={
+          project.description ||
+          `View details, location, price, size, features, and amenities for ${project.title} by Ikram Real Estate.`
+        }
+        path={`/projects/${project.slug}`}
+        image={project.coverImage || project.image || project.images?.[0]?.url}
+        structuredData={createProjectSchema(project)}
+      />
       <section className="pd-hero">
         <div className="pd-hero__media">
           <img

@@ -12,7 +12,7 @@ import { siteData } from "../data/siteData";
 import { createContactMessage } from "../services/contactService";
 import contactHeroImage from "../assets/images/hero/hero-5.webp";
 import "./Contact.css";
-
+import SEO from "../components/SEO";
 const initialFormData = {
   name: "",
   email: "",
@@ -107,201 +107,208 @@ const Contact = () => {
   };
 
   return (
-    <div className="contact-page">
-      <section className="contact-hero">
-        <div className="contact-hero__media">
-          <img
-            src={contactHeroImage}
-            alt="Contact Ikram Real Estate"
-            fetchPriority="high"
-            decoding="async"
-            width="1600"
-            height="1000"
-          />
-        </div>
-
-        <div className="contact-hero__overlay" />
-
-        <div className="container contact-hero__content">
-          <span className="contact-hero__eyebrow">Get In Touch</span>
-
-          <h1>Let’s Talk About Your Property Needs</h1>
-
-          <p>
-            Contact Ikram Real Estate for project information, property
-            guidance, pricing details, or a scheduled visit with our team.
-          </p>
-        </div>
-      </section>
-
-      <section className="section contact-section">
-        <div className="container contact-grid">
-          <div className="contact-form-card">
-            <span className="eyebrow">Send Message</span>
-
-            <h2>Request property information</h2>
-
-            <p>
-              Fill out the form and our team will get back to you with the right
-              property information as soon as possible.
-            </p>
-
-            <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="name">Full Name *</label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="phone">Phone Number *</label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+880 1XXX-XXXXXX"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="subject">Subject</label>
-                  <input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    placeholder="Project inquiry"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="message">Message *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="6"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Tell us about your property requirements..."
-                  required
-                />
-              </div>
-
-              {submitStatus.message && (
-                <div className={`submit-message ${submitStatus.type}`}>
-                  {submitStatus.message}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="submit-button"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <span>Sending...</span>
-                ) : (
-                  <>
-                    <FaPaperPlane aria-hidden="true" />
-                    <span>Send Message</span>
-                  </>
-                )}
-              </button>
-            </form>
+    <>
+      <SEO
+        title="Contact"
+        description="Contact Ikram Real Estate for property information, project details, pricing, office location, and professional real estate guidance."
+        path="/contact"
+      />
+      <div className="contact-page">
+        <section className="contact-hero">
+          <div className="contact-hero__media">
+            <img
+              src={contactHeroImage}
+              alt="Contact Ikram Real Estate"
+              fetchPriority="high"
+              decoding="async"
+              width="1600"
+              height="1000"
+            />
           </div>
 
-          <aside className="contact-sidebar">
-            <div className="contact-info-panel">
-              <span className="eyebrow">Contact Information</span>
+          <div className="contact-hero__overlay" />
 
-              <h2>Reach our team directly</h2>
+          <div className="container contact-hero__content">
+            <span className="contact-hero__eyebrow">Get In Touch</span>
+
+            <h1>Let’s Talk About Your Property Needs</h1>
+
+            <p>
+              Contact Ikram Real Estate for project information, property
+              guidance, pricing details, or a scheduled visit with our team.
+            </p>
+          </div>
+        </section>
+
+        <section className="section contact-section">
+          <div className="container contact-grid">
+            <div className="contact-form-card">
+              <span className="eyebrow">Send Message</span>
+
+              <h2>Request property information</h2>
 
               <p>
-                We are available to answer your questions, schedule visits, and
-                guide you through available property options.
+                Fill out the form and our team will get back to you with the
+                right property information as soon as possible.
               </p>
 
-              <div className="contact-info-list">
-                {contactCards.map((card) => (
-                  <article className="contact-info-card" key={card.title}>
-                    <div className="contact-info-card__icon">{card.icon}</div>
+              <form className="contact-form" onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="name">Full Name *</label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
 
-                    <div>
-                      <h3>{card.title}</h3>
+                  <div className="form-group">
+                    <label htmlFor="phone">Phone Number *</label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+880 1XXX-XXXXXX"
+                      required
+                    />
+                  </div>
+                </div>
 
-                      {card.details.map((detail) => (
-                        <p key={detail}>{detail}</p>
-                      ))}
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="your@email.com"
+                    />
+                  </div>
 
-                      {card.link && <a href={card.link}>{card.linkText}</a>}
-                    </div>
-                  </article>
-                ))}
-              </div>
+                  <div className="form-group">
+                    <label htmlFor="subject">Subject</label>
+                    <input
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="Project inquiry"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="message">Message *</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows="6"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us about your property requirements..."
+                    required
+                  />
+                </div>
+
+                {submitStatus.message && (
+                  <div className={`submit-message ${submitStatus.type}`}>
+                    {submitStatus.message}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <FaPaperPlane aria-hidden="true" />
+                      <span>Send Message</span>
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
 
-            <div className="contact-hours-card">
-              <div>
-                <FaClock aria-hidden="true" />
-              </div>
+            <aside className="contact-sidebar">
+              <div className="contact-info-panel">
+                <span className="eyebrow">Contact Information</span>
 
-              <h3>Office Hours</h3>
+                <h2>Reach our team directly</h2>
 
-              <p>Saturday - Thursday</p>
-              <strong>10:00 AM - 7:00 PM</strong>
+                <p>
+                  We are available to answer your questions, schedule visits,
+                  and guide you through available property options.
+                </p>
 
-              <span>Friday: Closed</span>
-            </div>
+                <div className="contact-info-list">
+                  {contactCards.map((card) => (
+                    <article className="contact-info-card" key={card.title}>
+                      <div className="contact-info-card__icon">{card.icon}</div>
 
-            <div className="contact-map-card contact-map-card--embed">
-              <div className="contact-map-card__header">
-                <FaMapMarkerAlt aria-hidden="true" />
+                      <div>
+                        <h3>{card.title}</h3>
 
-                <div>
-                  <h3>Office Location</h3>
-                  <p>{siteData.contact.address}</p>
+                        {card.details.map((detail) => (
+                          <p key={detail}>{detail}</p>
+                        ))}
+
+                        {card.link && <a href={card.link}>{card.linkText}</a>}
+                      </div>
+                    </article>
+                  ))}
                 </div>
               </div>
 
-              <iframe
-                title="Ikram Real Estate office location"
-                src={EXACT_MAP_EMBED_URL}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
-          </aside>
-        </div>
-      </section>
-    </div>
+              <div className="contact-hours-card">
+                <div>
+                  <FaClock aria-hidden="true" />
+                </div>
+
+                <h3>Office Hours</h3>
+
+                <p>Saturday - Thursday</p>
+                <strong>10:00 AM - 7:00 PM</strong>
+
+                <span>Friday: Closed</span>
+              </div>
+
+              <div className="contact-map-card contact-map-card--embed">
+                <div className="contact-map-card__header">
+                  <FaMapMarkerAlt aria-hidden="true" />
+
+                  <div>
+                    <h3>Office Location</h3>
+                    <p>{siteData.contact.address}</p>
+                  </div>
+                </div>
+
+                <iframe
+                  title="Ikram Real Estate office location"
+                  src={EXACT_MAP_EMBED_URL}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </>
   );
 };
 

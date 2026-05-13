@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
+import SEO from "../../components/SEO";
 import {
   FaEnvelope,
   FaInbox,
@@ -24,6 +26,7 @@ const formatMessageDate = (timestamp) => {
 };
 
 const AdminMessages = () => {
+  usePageTitle("Client Messages");
   const [messages, setMessages] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -84,152 +87,159 @@ const AdminMessages = () => {
   };
 
   return (
-    <div className="admin-content">
-      <div className="admin-page-header">
-        <span>Messages</span>
-        <h1>Client Inquiries</h1>
-        <p>View and manage messages submitted from the public contact form.</p>
-      </div>
+    <>
+      <SEO title="Client Messages" path="/admin/messages" noindex />
+      <div className="admin-content">
+        <div className="admin-page-header">
+          <span>Messages</span>
+          <h1>Client Inquiries</h1>
+          <p>
+            View and manage messages submitted from the public contact form.
+          </p>
+        </div>
 
-      <div className="admin-messages-summary">
-        <article>
-          <span>Total Messages</span>
-          <strong>{messages.length}</strong>
-        </article>
+        <div className="admin-messages-summary">
+          <article>
+            <span>Total Messages</span>
+            <strong>{messages.length}</strong>
+          </article>
 
-        <article>
-          <span>Unread Messages</span>
-          <strong>{unreadCount}</strong>
-        </article>
-      </div>
+          <article>
+            <span>Unread Messages</span>
+            <strong>{unreadCount}</strong>
+          </article>
+        </div>
 
-      <div className="admin-messages-toolbar">
-        {["all", "unread", "read"].map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            className={
-              activeFilter === filter
-                ? "admin-message-filter is-active"
-                : "admin-message-filter"
-            }
-            onClick={() => setActiveFilter(filter)}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
+        <div className="admin-messages-toolbar">
+          {["all", "unread", "read"].map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={
+                activeFilter === filter
+                  ? "admin-message-filter is-active"
+                  : "admin-message-filter"
+              }
+              onClick={() => setActiveFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
 
-      <div className="admin-messages-card">
-        {isLoading && (
-          <div className="admin-messages-empty">
-            <div>
-              <FaInbox aria-hidden="true" />
+        <div className="admin-messages-card">
+          {isLoading && (
+            <div className="admin-messages-empty">
+              <div>
+                <FaInbox aria-hidden="true" />
+              </div>
+
+              <h2>Loading messages...</h2>
+              <p>Please wait while we load client inquiries.</p>
             </div>
+          )}
 
-            <h2>Loading messages...</h2>
-            <p>Please wait while we load client inquiries.</p>
-          </div>
-        )}
+          {!isLoading && errorMessage && (
+            <div className="admin-messages-empty">
+              <div>
+                <FaInbox aria-hidden="true" />
+              </div>
 
-        {!isLoading && errorMessage && (
-          <div className="admin-messages-empty">
-            <div>
-              <FaInbox aria-hidden="true" />
+              <h2>Unable to load messages</h2>
+              <p>{errorMessage}</p>
             </div>
+          )}
 
-            <h2>Unable to load messages</h2>
-            <p>{errorMessage}</p>
-          </div>
-        )}
+          {!isLoading && !errorMessage && filteredMessages.length === 0 && (
+            <div className="admin-messages-empty">
+              <div>
+                <FaInbox aria-hidden="true" />
+              </div>
 
-        {!isLoading && !errorMessage && filteredMessages.length === 0 && (
-          <div className="admin-messages-empty">
-            <div>
-              <FaInbox aria-hidden="true" />
+              <h2>No messages found</h2>
+              <p>
+                Messages submitted from the contact form will appear here
+                automatically.
+              </p>
             </div>
+          )}
 
-            <h2>No messages found</h2>
-            <p>
-              Messages submitted from the contact form will appear here
-              automatically.
-            </p>
-          </div>
-        )}
+          {!isLoading && !errorMessage && filteredMessages.length > 0 && (
+            <div className="admin-message-list">
+              {filteredMessages.map((message) => (
+                <article
+                  className={
+                    message.status === "unread"
+                      ? "admin-message-card is-unread"
+                      : "admin-message-card"
+                  }
+                  key={message.id}
+                >
+                  <div className="admin-message-card__top">
+                    <div>
+                      <span
+                        className={`admin-message-status ${message.status}`}
+                      >
+                        {message.status}
+                      </span>
 
-        {!isLoading && !errorMessage && filteredMessages.length > 0 && (
-          <div className="admin-message-list">
-            {filteredMessages.map((message) => (
-              <article
-                className={
-                  message.status === "unread"
-                    ? "admin-message-card is-unread"
-                    : "admin-message-card"
-                }
-                key={message.id}
-              >
-                <div className="admin-message-card__top">
-                  <div>
-                    <span className={`admin-message-status ${message.status}`}>
-                      {message.status}
-                    </span>
+                      <h2>{message.subject || "Project Inquiry"}</h2>
 
-                    <h2>{message.subject || "Project Inquiry"}</h2>
+                      <p>{formatMessageDate(message.createdAt)}</p>
+                    </div>
 
-                    <p>{formatMessageDate(message.createdAt)}</p>
+                    <div className="admin-message-card__actions">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleReadStatus(message)}
+                        title={
+                          message.status === "unread"
+                            ? "Mark as read"
+                            : "Mark as unread"
+                        }
+                      >
+                        <FaRegEnvelopeOpen aria-hidden="true" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMessage(message.id)}
+                        title="Delete message"
+                      >
+                        <FaTrash aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="admin-message-card__actions">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleReadStatus(message)}
-                      title={
-                        message.status === "unread"
-                          ? "Mark as read"
-                          : "Mark as unread"
-                      }
-                    >
-                      <FaRegEnvelopeOpen aria-hidden="true" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteMessage(message.id)}
-                      title="Delete message"
-                    >
-                      <FaTrash aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="admin-message-card__meta">
-                  <p>
-                    <strong>Name:</strong>
-                    <span>{message.name}</span>
-                  </p>
-
-                  <p>
-                    <FaPhoneAlt aria-hidden="true" />
-                    <a href={`tel:${message.phone}`}>{message.phone}</a>
-                  </p>
-
-                  {message.email && (
+                  <div className="admin-message-card__meta">
                     <p>
-                      <FaEnvelope aria-hidden="true" />
-                      <a href={`mailto:${message.email}`}>{message.email}</a>
+                      <strong>Name:</strong>
+                      <span>{message.name}</span>
                     </p>
-                  )}
-                </div>
 
-                <div className="admin-message-card__body">
-                  <p>{message.message}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+                    <p>
+                      <FaPhoneAlt aria-hidden="true" />
+                      <a href={`tel:${message.phone}`}>{message.phone}</a>
+                    </p>
+
+                    {message.email && (
+                      <p>
+                        <FaEnvelope aria-hidden="true" />
+                        <a href={`mailto:${message.email}`}>{message.email}</a>
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="admin-message-card__body">
+                    <p>{message.message}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

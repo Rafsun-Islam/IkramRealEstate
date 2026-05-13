@@ -9,7 +9,7 @@ import fallbackGallery3 from "../assets/images/hero/hero-3.webp";
 import fallbackGallery4 from "../assets/images/hero/hero-4.webp";
 import fallbackGallery5 from "../assets/images/hero/hero-5.webp";
 import "./Gallery.css";
-
+import SEO from "../components/SEO";
 const fallbackGalleryItems = [
   {
     id: "fallback-1",
@@ -108,175 +108,182 @@ const Gallery = () => {
   };
 
   return (
-    <div className="gallery-page">
-      <section className="gallery-hero">
-        <div className="gallery-hero__media">
-          <img
-            src={galleryHeroImage}
-            alt="Ikram Real Estate gallery showcase"
-            fetchPriority="high"
-            decoding="async"
-            width="1600"
-            height="1000"
-          />
-        </div>
+    <>
+      <SEO
+        title="Gallery"
+        description="Browse Ikram Real Estate project gallery with residential, commercial, interior, exterior, and construction property images."
+        path="/gallery"
+      />
+      <div className="gallery-page">
+        <section className="gallery-hero">
+          <div className="gallery-hero__media">
+            <img
+              src={galleryHeroImage}
+              alt="Ikram Real Estate gallery showcase"
+              fetchPriority="high"
+              decoding="async"
+              width="1600"
+              height="1000"
+            />
+          </div>
 
-        <div className="gallery-hero__overlay" />
+          <div className="gallery-hero__overlay" />
 
-        <div className="container gallery-hero__content">
-          <span className="gallery-hero__eyebrow">Project Gallery</span>
+          <div className="container gallery-hero__content">
+            <span className="gallery-hero__eyebrow">Project Gallery</span>
 
-          <h1>Explore Our Property Showcase</h1>
-
-          <p>
-            View selected residential and commercial project visuals from Ikram
-            Real Estate, designed to highlight quality, space, and modern
-            living.
-          </p>
-        </div>
-      </section>
-
-      <section className="section gallery-section">
-        <div className="container">
-          <div className="gallery-header">
-            <div>
-              <span className="eyebrow">Our Work</span>
-              <h2 className="section-title">Featured project visuals</h2>
-            </div>
+            <h1>Explore Our Property Showcase</h1>
 
             <p>
-              Browse our curated collection of property images. New photos added
-              from the admin dashboard will appear here automatically.
+              View selected residential and commercial project visuals from
+              Ikram Real Estate, designed to highlight quality, space, and
+              modern living.
             </p>
           </div>
+        </section>
 
-          {isLoadingGallery && (
-            <div className="gallery-state">
+        <section className="section gallery-section">
+          <div className="container">
+            <div className="gallery-header">
               <div>
-                <FaImages aria-hidden="true" />
+                <span className="eyebrow">Our Work</span>
+                <h2 className="section-title">Featured project visuals</h2>
               </div>
 
-              <h2>Loading gallery...</h2>
-              <p>Please wait while we load the latest project images.</p>
+              <p>
+                Browse our curated collection of property images. New photos
+                added from the admin dashboard will appear here automatically.
+              </p>
             </div>
-          )}
 
-          {!isLoadingGallery && errorMessage && (
-            <div className="gallery-state gallery-state--notice">
-              <div>
-                <FaImages aria-hidden="true" />
+            {isLoadingGallery && (
+              <div className="gallery-state">
+                <div>
+                  <FaImages aria-hidden="true" />
+                </div>
+
+                <h2>Loading gallery...</h2>
+                <p>Please wait while we load the latest project images.</p>
               </div>
+            )}
 
-              <h2>Live gallery unavailable</h2>
-              <p>{errorMessage}</p>
-            </div>
-          )}
+            {!isLoadingGallery && errorMessage && (
+              <div className="gallery-state gallery-state--notice">
+                <div>
+                  <FaImages aria-hidden="true" />
+                </div>
 
-          {!isLoadingGallery && galleryItems.length > 0 && (
-            <>
-              <div className="gallery-filters" aria-label="Gallery filters">
-                {galleryFilters.map((filter) => (
-                  <button
-                    type="button"
-                    key={filter}
-                    className={
-                      activeFilter === filter
-                        ? "gallery-filter is-active"
-                        : "gallery-filter"
-                    }
-                    onClick={() => setActiveFilter(filter)}
-                  >
-                    {filter}
-                  </button>
-                ))}
+                <h2>Live gallery unavailable</h2>
+                <p>{errorMessage}</p>
               </div>
+            )}
 
-              {filteredItems.length > 0 ? (
-                <div className="gallery-grid">
-                  {filteredItems.map((item) => (
-                    <article
-                      className="gallery-card"
-                      key={item.id || item.publicId || item.url}
+            {!isLoadingGallery && galleryItems.length > 0 && (
+              <>
+                <div className="gallery-filters" aria-label="Gallery filters">
+                  {galleryFilters.map((filter) => (
+                    <button
+                      type="button"
+                      key={filter}
+                      className={
+                        activeFilter === filter
+                          ? "gallery-filter is-active"
+                          : "gallery-filter"
+                      }
+                      onClick={() => setActiveFilter(filter)}
                     >
-                      <button
-                        type="button"
-                        className="gallery-card__button"
-                        onClick={() => setSelectedImage(item)}
-                        aria-label={`View ${getCleanGalleryTitle(item)}`}
-                      >
-                        <img
-                          src={getGalleryImageUrl(item)}
-                          alt={item.alt || getCleanGalleryTitle(item)}
-                          loading="lazy"
-                          decoding="async"
-                          width="800"
-                          height="600"
-                        />
-
-                        <span className="gallery-card__overlay">
-                          <span>
-                            <small>{item.category || "General"}</small>
-                            <strong>{getCleanGalleryTitle(item)}</strong>
-                          </span>
-
-                          <FaExpandAlt aria-hidden="true" />
-                        </span>
-                      </button>
-                    </article>
+                      {filter}
+                    </button>
                   ))}
                 </div>
-              ) : (
-                <div className="gallery-state">
-                  <div>
-                    <FaImages aria-hidden="true" />
+
+                {filteredItems.length > 0 ? (
+                  <div className="gallery-grid">
+                    {filteredItems.map((item) => (
+                      <article
+                        className="gallery-card"
+                        key={item.id || item.publicId || item.url}
+                      >
+                        <button
+                          type="button"
+                          className="gallery-card__button"
+                          onClick={() => setSelectedImage(item)}
+                          aria-label={`View ${getCleanGalleryTitle(item)}`}
+                        >
+                          <img
+                            src={getGalleryImageUrl(item)}
+                            alt={item.alt || getCleanGalleryTitle(item)}
+                            loading="lazy"
+                            decoding="async"
+                            width="800"
+                            height="600"
+                          />
+
+                          <span className="gallery-card__overlay">
+                            <span>
+                              <small>{item.category || "General"}</small>
+                              <strong>{getCleanGalleryTitle(item)}</strong>
+                            </span>
+
+                            <FaExpandAlt aria-hidden="true" />
+                          </span>
+                        </button>
+                      </article>
+                    ))}
                   </div>
+                ) : (
+                  <div className="gallery-state">
+                    <div>
+                      <FaImages aria-hidden="true" />
+                    </div>
 
-                  <h2>No images found</h2>
-                  <p>Try choosing a different gallery category.</p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </section>
+                    <h2>No images found</h2>
+                    <p>Try choosing a different gallery category.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
 
-      {selectedImage && (
-        <div
-          className="gallery-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label={getCleanGalleryTitle(selectedImage)}
-        >
-          <button
-            type="button"
-            className="gallery-modal__backdrop"
-            onClick={closeModal}
-            aria-label="Close gallery preview"
-          />
-
-          <div className="gallery-modal__content">
+        {selectedImage && (
+          <div
+            className="gallery-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={getCleanGalleryTitle(selectedImage)}
+          >
             <button
               type="button"
-              className="gallery-modal__close"
+              className="gallery-modal__backdrop"
               onClick={closeModal}
               aria-label="Close gallery preview"
-            >
-              ×
-            </button>
-
-            <img
-              src={getGalleryImageUrl(selectedImage)}
-              alt={selectedImage.alt || getCleanGalleryTitle(selectedImage)}
             />
 
-            <div className="gallery-modal__info">
-              <span>{selectedImage.category || "General"}</span>
-              <h2>{getCleanGalleryTitle(selectedImage)}</h2>
+            <div className="gallery-modal__content">
+              <button
+                type="button"
+                className="gallery-modal__close"
+                onClick={closeModal}
+                aria-label="Close gallery preview"
+              >
+                ×
+              </button>
+
+              <img
+                src={getGalleryImageUrl(selectedImage)}
+                alt={selectedImage.alt || getCleanGalleryTitle(selectedImage)}
+              />
+
+              <div className="gallery-modal__info">
+                <span>{selectedImage.category || "General"}</span>
+                <h2>{getCleanGalleryTitle(selectedImage)}</h2>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
