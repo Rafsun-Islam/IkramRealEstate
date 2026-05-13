@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { FaArrowRight, FaHome, FaSearch, FaPhoneAlt } from "react-icons/fa";
+import { FaArrowRight, FaHome, FaPhoneAlt, FaSearch } from "react-icons/fa";
+
 import SEO from "../components/SEO";
 import notFoundImage from "../assets/images/hero/hero-4.webp";
 import "./NotFound.css";
@@ -7,18 +8,13 @@ import "./NotFound.css";
 const NotFound = () => {
   return (
     <>
-      return (
-      <>
-        <SEO
-          title="Page Not Found"
-          description="The page you are looking for could not be found on Ikram Real Estate."
-          path="/404"
-          noindex
-        />
+      <SEO
+        title="Page Not Found"
+        description="The page you are looking for could not be found on Ikram Real Estate."
+        path="/404"
+        noindex
+      />
 
-        <section className="not-found-page">...</section>
-      </>
-      );
       <section className="not-found-page">
         <div className="not-found-page__media">
           <img
