@@ -48,8 +48,9 @@ const Contact = () => {
       icon: <FaWhatsapp />,
       title: "WhatsApp",
       details: ["Chat with our property team"],
-      link: siteData.contact.phoneHref,
+      link: siteData.contact.whatsappHref,
       linkText: "Start chat",
+      isExternal: true,
     },
     {
       icon: <FaMapMarkerAlt />,
@@ -266,7 +267,15 @@ const Contact = () => {
                           <p key={detail}>{detail}</p>
                         ))}
 
-                        {card.link && <a href={card.link}>{card.linkText}</a>}
+                        {card.link && (
+                          <a
+                            href={card.link}
+                            target={card.isExternal ? "_blank" : undefined}
+                            rel={card.isExternal ? "noreferrer" : undefined}
+                          >
+                            {card.linkText}
+                          </a>
+                        )}
                       </div>
                     </article>
                   ))}

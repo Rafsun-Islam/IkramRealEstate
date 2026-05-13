@@ -8,6 +8,8 @@ export const siteData = {
   contact: {
     phone: "+880 1712-449365",
     phoneHref: "tel:+8801712449365",
+    whatsappHref:
+      "https://wa.me/8801712449365?text=Hello%20Ikram%20Real%20Estate%2C%20I%20want%20to%20know%20more%20about%20your%20property%20projects.",
     email: "info@ikramrealestate.com",
     emailHref: "mailto:info@ikramrealestate.com",
     address: "Barisal, Bangladesh",
