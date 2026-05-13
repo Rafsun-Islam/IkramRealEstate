@@ -1,437 +1,381 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade, Pagination } from "swiper/modules";
 import {
-  FaBuilding,
-  FaKey,
-  FaHandshake,
+  FaArrowRight,
   FaAward,
-  FaMapMarkerAlt,
-  FaBed,
-  FaBath,
-  FaRulerCombined,
+  FaBuilding,
   FaCheckCircle,
+  FaHandshake,
+  FaHome,
+  FaMapMarkerAlt,
   FaPhoneAlt,
-  FaClock,
+  FaShieldAlt,
 } from "react-icons/fa";
 
-import "swiper/css";
-import "swiper/css/effect-fade";
-import "swiper/css/pagination";
+import { heroSlides } from "../data/heroData";
+import { siteData } from "../data/siteData";
+import { featuredProjects, homeServices } from "../data/projectsData";
 
+import companyImage from "../assets/images/company.webp";
 import "./Home.css";
 
-import hero1 from "../assets/images/hero1.webp";
-import hero2 from "../assets/images/hero2.webp";
-import hero3 from "../assets/images/hero3.webp";
-import hero4 from "../assets/images/hero4.webp";
-import hero5 from "../assets/images/hero5.webp";
-
-import companyImage from '../assets/images/company.jpg';
+const SLIDE_INTERVAL = 5500;
 
 const Home = () => {
-  const heroImages = [hero1, hero2, hero3, hero4, hero5];
+  const [activeSlide, setActiveSlide] = useState(0);
 
-  const featuredProjects = [
-    {
-      id: 1,
-      title: "Azure Heights",
-      location: "Gulshan 2, Dhaka",
-      status: "ongoing",
-      statusText: "Under Construction",
-      beds: 3,
-      baths: 3,
-      area: "1,850",
-      price: "1.85",
-      completion: "2026",
-    },
-    {
-      id: 2,
-      title: "Pearl Residency",
-      location: "Banani, Dhaka",
-      status: "completed",
-      statusText: "Ready to Move",
-      beds: 4,
-      baths: 4,
-      area: "2,450",
-      price: "2.75",
-      completion: "Ready",
-    },
-    {
-      id: 3,
-      title: "Crown Towers",
-      location: "Dhanmondi, Dhaka",
-      status: "upcoming",
-      statusText: "Launching Soon",
-      beds: 4,
-      baths: 4,
-      area: "3,200",
-      price: "4.20",
-      completion: "2027",
-    },
-  ];
+  const currentSlide = heroSlides[activeSlide] ?? heroSlides[0];
 
-  const features = [
-    {
-      icon: <FaBuilding />,
-      title: "Premium Quality",
-      description: "International standard construction with finest materials",
-    },
-    {
-      icon: <FaKey />,
-      title: "Instant Possession",
-      description: "Ready flats available for immediate handover",
-    },
-    {
-      icon: <FaHandshake />,
-      title: "Trusted Brand",
-      description: "Decade of excellence with 50+ delivered projects",
-    },
-    {
-      icon: <FaAward />,
-      title: "Award Winning",
-      description: "Recognized nationally for architectural excellence",
-    },
-  ];
+  const serviceIcons = useMemo(
+    () => [FaShieldAlt, FaMapMarkerAlt, FaHandshake, FaCheckCircle],
+    [],
+  );
 
-  const amenities = [
-    "Swimming Pool",
-    "Gymnasium",
-    "Children's Play Area",
-    "Community Hall",
-    "Rooftop Garden",
-    "Prayer Room",
-    "Basement Parking",
-    "24/7 Security",
-    "Power Backup",
-    "Elevator Service",
-    "CCTV Surveillance",
-    "Fire Safety System",
-  ];
+  useEffect(() => {
+    if (heroSlides.length <= 1) return undefined;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion) return undefined;
+
+    const sliderTimer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, SLIDE_INTERVAL);
+
+    return () => window.clearInterval(sliderTimer);
+  }, []);
+
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+
+    const nextSlideIndex = (activeSlide + 1) % heroSlides.length;
+    const nextSlide = heroSlides[nextSlideIndex];
+
+    if (!nextSlide?.image) return;
+
+    const nextImage = new Image();
+    nextImage.src = nextSlide.image;
+  }, [activeSlide]);
+
+  const handleSlideChange = (index) => {
+    setActiveSlide(index);
+  };
 
   return (
-    <div className="home">
-      {/* Hero Section with Background Slideshow */}
-      <section className="hero-background-slider">
-        {/* Background Slideshow */}
-        <Swiper
-          modules={[Autoplay, EffectFade]}
-          effect="fade"
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false,
-          }}
-          loop={true}
-          speed={2000}
-          className="hero-background-swiper"
-        >
-          {heroImages.map((image, index) => (
-            <SwiperSlide key={index}>
-              <div className="hero-background-slide">
-                <img src={image} alt={`Ikram Real Estate ${index + 1}`} />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+    <>
+      <section
+        className="home-hero"
+        aria-label="Ikram Real Estate hero section"
+      >
+        <div className="home-hero__media">
+          <img
+            key={currentSlide.id}
+            src={currentSlide.image}
+            alt={currentSlide.alt}
+            fetchPriority={activeSlide === 0 ? "high" : "auto"}
+            decoding="async"
+            width="1600"
+            height="1000"
+          />
+        </div>
 
-        {/* Dark Overlay */}
-        <div className="hero-overlay-dark"></div>
+        <div className="home-hero__overlay" />
 
-        {/* Content Overlay */}
-        <div className="hero-content-overlay">
-          <div className="hero-content-container">
-            <div className="hero-badge">Welcome to Excellence</div>
-            <h1>
-              Discover Luxury Living
-              <br />
-              In Barisal's Prime Locations
-            </h1>
-            <p className="hero-description">
-              Experience unparalleled elegance with our premium residential
-              projects
-              <br />
-              crafted for those who appreciate the finer things in life
+        <div className="container home-hero__container">
+          <div className="home-hero__content">
+            <span className="home-hero__eyebrow">
+              Trusted Real Estate Partner
+            </span>
+
+            <h1>Find Your Perfect Property With Confidence</h1>
+
+            <p>
+              Ikram Real Estate helps families, investors, and businesses
+              discover reliable residential and commercial properties with clear
+              guidance and trusted support.
             </p>
-            <div className="hero-buttons">
-              <Link to="/projects" className="btn-primary">
-                <span>Explore Properties</span>
+
+            <div className="home-hero__actions">
+              <Link to="/projects" className="btn btn-primary">
+                Explore Projects
+                <FaArrowRight aria-hidden="true" />
               </Link>
-              <Link to="/contact" className="btn-secondary">
-                <span>Schedule Visit</span>
+
+              <Link to="/contact" className="btn btn-secondary">
+                Contact Us
               </Link>
             </div>
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <h3>50+</h3>
-                <p>Completed Projects</p>
-              </div>
-              <div className="hero-stat">
-                <h3>1,200+</h3>
-                <p>Happy Families</p>
-              </div>
-              <div className="hero-stat">
-                <h3>15+</h3>
-                <p>Years Experience</p>
-              </div>
+
+            <div className="home-hero__stats" aria-label="Company statistics">
+              {siteData.stats.map((stat) => (
+                <div className="home-hero__stat" key={stat.label}>
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="features-section">
-        <div className="container">
-          <div className="features-grid">
-            {features.map((feature, index) => (
-              <div key={index} className="feature-card">
-                <div className="feature-icon">{feature.icon}</div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-              </div>
+        {heroSlides.length > 1 && (
+          <div className="home-hero__slider" aria-label="Hero image slider">
+            {heroSlides.map((slide, index) => (
+              <button
+                type="button"
+                key={slide.id}
+                className={
+                  activeSlide === index
+                    ? "home-hero__slider-dot is-active"
+                    : "home-hero__slider-dot"
+                }
+                onClick={() => handleSlideChange(index)}
+                aria-label={`Show hero image ${index + 1}`}
+                aria-pressed={activeSlide === index}
+              />
             ))}
           </div>
-        </div>
+        )}
       </section>
 
-      {/* About Preview Section */}
-      <section className="about-preview">
-        <div className="container">
-        <div className="about-container">
-          <div className="about-content-grid">
-            <div className="about-image">
-              <div className="image-wrapper">
-                <div className="company-image-container">
-                  <img 
-                    src={companyImage} 
-                    alt="Ikram Real Estate Office" 
-                    className="company-image"
-                  />
-                </div>
-                <div className="about-overlay-badge">
-                  <div className="badge-content">
-                    <h3>15+</h3>
-                    <p>
-                      Years of
-                      <br />
-                      Excellence
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <section className="section home-about-preview">
+        <div className="container home-about-preview__grid">
+          <div className="home-about-preview__visual">
+            <div className="home-about-preview__image">
+              <img
+                src={companyImage}
+                alt="Ikram Real Estate corporate office"
+                loading="lazy"
+                decoding="async"
+                width="1000"
+                height="750"
+              />
             </div>
-            
-            <div className="about-text">
-              <span className="section-label">About Ikram Real Estate</span>
-              <h2>
-                Building Dreams,
-                <br />
-                Delivering Excellence
-              </h2>
-              <p className="lead-text">
-                For over 15 years, Ikram Real Estate has been synonymous with
-                quality, trust, and innovation in Bangladesh's real estate
-                sector.
-              </p>
-              <p>
-                We specialize in developing premium residential and commercial
-                properties in Barisal's most coveted locations. Our commitment to
-                architectural excellence, combined with world-class amenities
-                and transparent business practices, has made us the preferred
-                choice for discerning homebuyers.
-              </p>
-              <div className="about-highlights">
-                <div className="highlight-item">
-                  <FaCheckCircle />
-                  <span>BDA Approved Projects</span>
-                </div>
-                <div className="highlight-item">
-                  <FaCheckCircle />
-                  <span>On-Time Delivery</span>
-                </div>
-                <div className="highlight-item">
-                  <FaCheckCircle />
-                  <span>Premium Location Portfolio</span>
-                </div>
-                <div className="highlight-item">
-                  <FaCheckCircle />
-                  <span>After-Sales Support</span>
-                </div>
-              </div>
-              <Link to="/about" className="btn-outline">
-                <span>Discover Our Story</span>
-              </Link>
+
+            <div className="home-about-preview__experience">
+              <strong>15+</strong>
+              <span>Years of Trusted Service</span>
+            </div>
+
+            <div className="home-about-preview__badge">
+              <FaBuilding aria-hidden="true" />
+              <span>Registered Real Estate Company</span>
             </div>
           </div>
-          </div> 
-        </div>
-      </section>
 
-      {/* Featured Projects Section */}
-      <section className="featured-projects">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-label">Featured Properties</span>
-            <h2>Exclusive Projects</h2>
-            <p>Handpicked selection of our most prestigious developments</p>
-          </div>
+          <div className="home-about-preview__content">
+            <span className="eyebrow">About Ikram Real Estate</span>
 
-          <div className="projects-grid">
-            {featuredProjects.map((project) => (
-              <div key={project.id} className="project-card">
-                <div className="project-image">
-                  <div className="placeholder-image">
-                    <span>Property Image</span>
-                  </div>
-                  <span className={`status-badge ${project.status}`}>
-                    {project.statusText}
-                  </span>
-                  <div className="project-overlay">
-                    <Link to="/projects" className="overlay-btn">
-                      View Details
-                    </Link>
-                  </div>
+            <h2 className="section-title">
+              Reliable property guidance for confident decisions.
+            </h2>
+
+            <p>
+              Ikram Real Estate provides professional property support for
+              families, investors, and businesses looking for quality
+              residential and commercial spaces. We focus on clear
+              communication, practical locations, and long-term client value.
+            </p>
+
+            <div className="home-about-preview__features">
+              <article>
+                <div className="home-about-preview__feature-icon">
+                  <FaShieldAlt aria-hidden="true" />
                 </div>
-                <div className="project-info">
-                  <div className="project-header">
-                    <h3>{project.title}</h3>
-                    <div className="price-tag">৳{project.price} Cr</div>
-                  </div>
-                  <p className="location">
-                    <FaMapMarkerAlt /> {project.location}
+
+                <div>
+                  <h3>Verified Property Guidance</h3>
+                  <p>
+                    We help clients review important project details clearly
+                    before making an investment decision.
                   </p>
-                  <div className="project-features">
-                    <div className="feature-item">
-                      <FaBed />
-                      <span>{project.beds} Beds</span>
-                    </div>
-                    <div className="feature-item">
-                      <FaBath />
-                      <span>{project.baths} Baths</span>
-                    </div>
-                    <div className="feature-item">
-                      <FaRulerCombined />
-                      <span>{project.area} sqft</span>
-                    </div>
-                  </div>
-                  <div className="project-footer">
-                    <div className="completion">
-                      <FaClock />
-                      <span>Completion: {project.completion}</span>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              </article>
 
-          <div className="view-all-container">
-            <Link to="/projects" className="btn-view-all">
-              <span>View All Projects</span>
+              <article>
+                <div className="home-about-preview__feature-icon">
+                  <FaHandshake aria-hidden="true" />
+                </div>
+
+                <div>
+                  <h3>Transparent Communication</h3>
+                  <p>
+                    From first inquiry to handover, our team keeps the process
+                    simple, honest, and professional.
+                  </p>
+                </div>
+              </article>
+
+              <article>
+                <div className="home-about-preview__feature-icon">
+                  <FaAward aria-hidden="true" />
+                </div>
+
+                <div>
+                  <h3>Client-First Service</h3>
+                  <p>
+                    We prioritize trust, location value, construction quality,
+                    and long-term customer satisfaction.
+                  </p>
+                </div>
+              </article>
+            </div>
+
+            <Link to="/about" className="home-about-preview__link">
+              Learn More About Us
+              <FaArrowRight aria-hidden="true" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Amenities Section */}
-      <section className="amenities-section">
+      <section className="section home-projects">
         <div className="container">
           <div className="section-header">
-            <span className="section-label">World-Class Facilities</span>
-            <h2>Premium Amenities</h2>
-            <p>Experience luxury living with state-of-the-art facilities</p>
+            <span className="eyebrow">Featured Projects</span>
+
+            <h2 className="section-title">Explore selected properties</h2>
+
+            <p className="section-description">
+              Discover residential and commercial projects designed for modern
+              lifestyles, practical locations, and long-term value.
+            </p>
           </div>
-          <div className="amenities-grid">
-            {amenities.map((amenity, index) => (
-              <div key={index} className="amenity-item">
-                <FaCheckCircle />
-                <span>{amenity}</span>
-              </div>
+
+          <div className="home-projects__grid">
+            {featuredProjects.map((project) => (
+              <article className="home-project-card" key={project.id}>
+                <div className="home-project-card__image">
+                  <img
+                    src={project.image}
+                    alt={`${project.title} property project`}
+                    loading="lazy"
+                    decoding="async"
+                    width="800"
+                    height="600"
+                  />
+
+                  <span className="home-project-card__status">
+                    {project.status}
+                  </span>
+                </div>
+
+                <div className="home-project-card__body">
+                  <p className="home-project-card__location">
+                    <FaMapMarkerAlt aria-hidden="true" />
+                    <span>{project.location}</span>
+                  </p>
+
+                  <h3>{project.title}</h3>
+
+                  <p className="home-project-card__description">
+                    {project.description}
+                  </p>
+
+                  <div
+                    className="home-project-card__meta"
+                    aria-label={`${project.title} project details`}
+                  >
+                    <div>
+                      <span>Type</span>
+                      <strong>{project.type}</strong>
+                    </div>
+
+                    <div>
+                      <span>Size</span>
+                      <strong>{project.size}</strong>
+                    </div>
+
+                    <div>
+                      <span>Price</span>
+                      <strong>{project.price}</strong>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    className="home-project-card__link"
+                  >
+                    View Details
+                    <FaArrowRight aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="container">
-          <div className="cta-content">
-            <h2>Ready to Own Your Dream Home?</h2>
-            <p>
-              Visit our show apartments and experience luxury living firsthand
-            </p>
-            <div className="cta-buttons">
-              <Link to="/contact" className="btn-cta-primary">
-                <span>Schedule a Visit</span>
-              </Link>
-              <a href="tel:+8801712449365" className="btn-cta-secondary">
-                <FaPhoneAlt />
-                <span>Call Now</span>
-              </a>
-            </div>
+          <div className="home-projects__footer">
+            <Link to="/projects" className="btn btn-primary">
+              View All Projects
+              <FaArrowRight aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="why-choose-section">
+      <section className="section home-why">
         <div className="container">
           <div className="section-header">
-            <span className="section-label">Why Ikram Real Estate</span>
-            <h2>Your Trusted Partner</h2>
+            <span className="eyebrow">Why Choose Us</span>
+
+            <h2 className="section-title">Built around trust and quality</h2>
+
+            <p className="section-description">
+              We focus on the details that matter most to real clients:
+              reliability, location, transparent information, and professional
+              support.
+            </p>
           </div>
-          <div className="why-choose-grid">
-            <div className="why-item">
-              <div className="why-number">01</div>
-              <h3>Prime Locations</h3>
-              <p>
-                All properties strategically located in Barisal's most prestigious
-                neighborhoods with excellent connectivity and infrastructure.
-              </p>
-            </div>
-            <div className="why-item">
-              <div className="why-number">02</div>
-              <h3>Legal Transparency</h3>
-              <p>
-                Complete documentation, BDA approved plans, and clear title
-                deeds ensuring absolute peace of mind for our clients.
-              </p>
-            </div>
-            <div className="why-item">
-              <div className="why-number">03</div>
-              <h3>Quality Assurance</h3>
-              <p>
-                International standard construction using premium materials and
-                world-class finishing under expert supervision.
-              </p>
-            </div>
-            <div className="why-item">
-              <div className="why-number">04</div>
-              <h3>Timely Delivery</h3>
-              <p>
-                Proven track record of completing projects on schedule with our
-                commitment to deadline adherence.
-              </p>
-            </div>
-            <div className="why-item">
-              <div className="why-number">05</div>
-              <h3>Customer Support</h3>
-              <p>
-                Dedicated after-sales service team to assist you throughout your
-                homeownership journey.
-              </p>
-            </div>
-            <div className="why-item">
-              <div className="why-number">06</div>
-              <h3>Flexible Payment</h3>
-              <p>
-                Easy installment plans and bank loan facilities to make your
-                dream home affordable and accessible.
-              </p>
-            </div>
+
+          <div className="home-why__grid">
+            {homeServices.map((service, index) => {
+              const Icon = serviceIcons[index % serviceIcons.length];
+
+              return (
+                <article className="home-why-card" key={service.title}>
+                  <div className="home-why-card__icon">
+                    <Icon aria-hidden="true" />
+                  </div>
+
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+
+                  <h3>{service.title}</h3>
+
+                  <p>{service.description}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
-    </div>
+
+      <section className="home-cta">
+        <div className="container home-cta__inner">
+          <div className="home-cta__content">
+            <span className="eyebrow">Ready to Talk?</span>
+
+            <h2>Looking for your next property?</h2>
+
+            <p>
+              Contact our team today and get professional guidance for your
+              property needs.
+            </p>
+          </div>
+
+          <div className="home-cta__actions">
+            <a href={siteData.contact.phoneHref} className="btn btn-primary">
+              <FaPhoneAlt aria-hidden="true" />
+              Call Now
+            </a>
+
+            <Link to="/contact" className="btn btn-secondary">
+              Send Message
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 

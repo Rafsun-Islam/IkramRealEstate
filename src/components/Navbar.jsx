@@ -1,80 +1,84 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import logo from '../assets/images/logo.png'; // Import your logo
-import './Navbar.css';
+import { useEffect, useState } from "react";
+import { NavLink, Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { siteData } from "../data/siteData";
+import logo from "../assets/images/logo.png";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const closeMenu = () => setIsOpen(false);
+  const toggleMenu = () => setIsOpen((current) => !current);
 
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-
-  // Add scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 24);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   return (
-    <nav className={scrolled ? 'navbar scrolled' : 'navbar'}>
-      <div className="navbar-container">
-        <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          <img src={logo} alt="Ikram Real Estate" className="logo-image" />
-          <span className="logo-text">Ikram Real Estate</span>
+    <header className={`site-header ${isScrolled ? "is-scrolled" : ""}`}>
+      <div className="site-header__inner">
+        <Link to="/" className="site-header__brand" onClick={closeMenu}>
+          <img src={logo} alt={`${siteData.name} logo`} />
+          <span>{siteData.name}</span>
         </Link>
-        
-        <div className="menu-icon" onClick={toggleMenu}>
+
+        <button
+          type="button"
+          className="site-header__toggle"
+          onClick={toggleMenu}
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isOpen}
+          aria-controls="primary-navigation"
+        >
           {isOpen ? <FaTimes /> : <FaBars />}
-        </div>
-        
-        <ul className={isOpen ? 'nav-menu active' : 'nav-menu'}>
-          <li className="nav-item">
-            <Link to="/" className="nav-links" onClick={closeMenu}>
-              Home
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/about" className="nav-links" onClick={closeMenu}>
-              About
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/projects" className="nav-links" onClick={closeMenu}>
-              Projects
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/gallery" className="nav-links" onClick={closeMenu}>
-              Gallery
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/contact" className="nav-links" onClick={closeMenu}>
-              Contact
-            </Link>
-          </li>
-        </ul>
+        </button>
+
+        <nav
+          id="primary-navigation"
+          className={`site-header__nav ${isOpen ? "is-open" : ""}`}
+          aria-label="Primary navigation"
+        >
+          <ul>
+            {siteData.navLinks.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "site-header__link is-active"
+                      : "site-header__link"
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          <Link to="/contact" className="site-header__cta" onClick={closeMenu}>
+            Schedule Visit
+          </Link>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 };
 

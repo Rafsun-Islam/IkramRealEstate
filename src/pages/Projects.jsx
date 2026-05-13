@@ -1,166 +1,184 @@
-import { useState } from 'react';
-import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined } from 'react-icons/fa';
-import './Page.css';
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  FaArrowRight,
+  FaBath,
+  FaBed,
+  FaBuilding,
+  FaMapMarkerAlt,
+  FaRulerCombined,
+  FaSearch,
+} from "react-icons/fa";
+
+import { projectFilters, projects } from "../data/projectsData";
+import heroProjectImage from "../assets/images/hero/hero-3.webp";
+import "./Projects.css";
 
 const Projects = () => {
-  const [filter, setFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const projects = [
-    {
-      id: 1,
-      title: 'Azure Heights',
-      location: 'Gulshan 2, Dhaka',
-      status: 'ongoing',
-      statusText: 'Under Construction',
-      beds: 3,
-      baths: 3,
-      area: '1,850',
-      price: '1. 85',
-      completion: '2026'
-    },
-    {
-      id: 2,
-      title: 'Pearl Residency',
-      location: 'Banani, Dhaka',
-      status: 'completed',
-      statusText: 'Ready to Move',
-      beds: 4,
-      baths: 4,
-      area: '2,450',
-      price: '2.75',
-      completion: 'Ready'
-    },
-    {
-      id: 3,
-      title: 'Crown Towers',
-      location: 'Dhanmondi, Dhaka',
-      status: 'upcoming',
-      statusText: 'Launching Soon',
-      beds: 4,
-      baths: 4,
-      area: '3,200',
-      price: '4.20',
-      completion: '2027'
-    },
-    {
-      id: 4,
-      title: 'Emerald Gardens',
-      location: 'Uttara, Dhaka',
-      status: 'completed',
-      statusText: 'Ready to Move',
-      beds:  3,
-      baths:  2,
-      area: '1,650',
-      price: '1.45',
-      completion: 'Ready'
-    },
-    {
-      id: 5,
-      title: 'Diamond Plaza',
-      location: 'Mirpur DOHS, Dhaka',
-      status: 'ongoing',
-      statusText: 'Under Construction',
-      beds: 4,
-      baths: 3,
-      area: '2,100',
-      price: '2.15',
-      completion: '2025'
-    },
-    {
-      id: 6,
-      title: 'Sapphire Residence',
-      location: 'Bashundhara, Dhaka',
-      status: 'upcoming',
-      statusText: 'Launching Soon',
-      beds:  3,
-      baths:  3,
-      area: '1,950',
-      price: '1.95',
-      completion: '2027'
-    }
-  ];
+  const filteredProjects = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
-  const filteredProjects = filter === 'all' 
-    ? projects 
-    : projects. filter(project => project.status === filter);
+    return projects.filter((project) => {
+      const matchesFilter =
+        activeFilter === "all" || project.status === activeFilter;
+
+      const matchesSearch =
+        !normalizedSearch ||
+        project.title.toLowerCase().includes(normalizedSearch) ||
+        project.location.toLowerCase().includes(normalizedSearch) ||
+        project.type.toLowerCase().includes(normalizedSearch);
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [activeFilter, searchTerm]);
 
   return (
-    <div className="page-container">
-      <div className="page-hero">
-        <span className="section-label">Our Portfolio</span>
-        <h1>Featured Projects</h1>
-        <p>Discover our range of premium residential developments</p>
-      </div>
-
-      <div className="page-content">
-        {/* Filter Buttons */}
-        <div className="filter-section">
-          <button 
-            className={filter === 'all' ?  'filter-btn active' : 'filter-btn'}
-            onClick={() => setFilter('all')}
-          >
-            All Projects
-          </button>
-          <button 
-            className={filter === 'ongoing' ? 'filter-btn active' : 'filter-btn'}
-            onClick={() => setFilter('ongoing')}
-          >
-            Ongoing
-          </button>
-          <button 
-            className={filter === 'completed' ? 'filter-btn active' : 'filter-btn'}
-            onClick={() => setFilter('completed')}
-          >
-            Ready
-          </button>
-          <button 
-            className={filter === 'upcoming' ? 'filter-btn active' : 'filter-btn'}
-            onClick={() => setFilter('upcoming')}
-          >
-            Upcoming
-          </button>
+    <div className="projects-page">
+      <section className="projects-hero">
+        <div className="projects-hero__media">
+          <img
+            src={heroProjectImage}
+            alt="Premium property projects by Ikram Real Estate"
+            fetchPriority="high"
+            decoding="async"
+            width="1600"
+            height="1000"
+          />
         </div>
 
-        {/* Projects Grid */}
-        <div className="projects-list">
-          {filteredProjects.map((project) => (
-            <div key={project.id} className="project-card-page">
-              <div className="project-image-page">
-                <div className="placeholder-image-page">
-                  <span>Property Image</span>
-                </div>
-                <span className={`status-badge-page ${project.status}`}>
-                  {project.statusText}
-                </span>
-              </div>
-              <div className="project-info-page">
-                <div className="project-header-page">
-                  <h3>{project.title}</h3>
-                  <div className="price-tag-page">৳{project.price} Cr</div>
-                </div>
-                <p className="location-page">
-                  <FaMapMarkerAlt /> {project.location}
-                </p>
-                <div className="project-features-page">
-                  <div className="feature-item-page">
-                    <FaBed />
-                    <span>{project. beds} Beds</span>
-                  </div>
-                  <div className="feature-item-page">
-                    <FaBath />
-                    <span>{project.baths} Baths</span>
-                  </div>
-                  <div className="feature-item-page">
-                    <FaRulerCombined />
-                    <span>{project.area} sqft</span>
-                  </div>
-                </div>
-                <button className="details-btn">View Details</button>
-              </div>
+        <div className="projects-hero__overlay" />
+
+        <div className="container projects-hero__inner">
+          <span className="projects-hero__eyebrow">Our Property Portfolio</span>
+
+          <h1>Discover Projects Built for Modern Living</h1>
+
+          <p>
+            Explore selected residential and commercial properties in practical
+            locations with reliable guidance, clear project information, and
+            long-term value.
+          </p>
+        </div>
+      </section>
+
+      <section className="section projects-section">
+        <div className="container">
+          <div className="projects-toolbar">
+            <div className="projects-search">
+              <FaSearch aria-hidden="true" />
+
+              <input
+                type="search"
+                placeholder="Search by project, location, or type"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                aria-label="Search projects"
+              />
             </div>
-          ))}
+
+            <div className="projects-filters" aria-label="Project filters">
+              {projectFilters.map((filter) => (
+                <button
+                  type="button"
+                  key={filter.value}
+                  className={
+                    activeFilter === filter.value
+                      ? "projects-filter is-active"
+                      : "projects-filter"
+                  }
+                  onClick={() => setActiveFilter(filter.value)}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {filteredProjects.length > 0 ? (
+            <div className="projects-grid">
+              {filteredProjects.map((project) => (
+                <article className="projects-card" key={project.id}>
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    className="projects-card__image"
+                    aria-label={`View ${project.title} details`}
+                  >
+                    <img
+                      src={project.image}
+                      alt={`${project.title} property project`}
+                      loading="lazy"
+                      decoding="async"
+                      width="800"
+                      height="600"
+                    />
+
+                    <span className={`projects-card__status ${project.status}`}>
+                      {project.statusText}
+                    </span>
+                  </Link>
+
+                  <div className="projects-card__body">
+                    <p className="projects-card__location">
+                      <FaMapMarkerAlt aria-hidden="true" />
+                      <span>{project.location}</span>
+                    </p>
+
+                    <div className="projects-card__header">
+                      <h2>{project.title}</h2>
+                      <strong>{project.price}</strong>
+                    </div>
+
+                    <p className="projects-card__description">
+                      {project.description}
+                    </p>
+
+                    <div className="projects-card__features">
+                      <div>
+                        <FaBuilding aria-hidden="true" />
+                        <span>{project.type}</span>
+                      </div>
+
+                      <div>
+                        <FaRulerCombined aria-hidden="true" />
+                        <span>{project.size}</span>
+                      </div>
+
+                      <div>
+                        <FaBed aria-hidden="true" />
+                        <span>{project.beds} Beds</span>
+                      </div>
+
+                      <div>
+                        <FaBath aria-hidden="true" />
+                        <span>{project.baths} Baths</span>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/projects/${project.slug}`}
+                      className="projects-card__link"
+                    >
+                      View Details
+                      <FaArrowRight aria-hidden="true" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="projects-empty">
+              <h2>No projects found</h2>
+              <p>
+                Try changing the filter or searching with a different project
+                name, location, or property type.
+              </p>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

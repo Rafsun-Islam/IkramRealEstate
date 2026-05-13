@@ -1,60 +1,94 @@
-import { FaFacebook, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
-import logo from '../assets/images/logo.png';
-import './Footer.css';
+import { Link } from "react-router-dom";
+import {
+  FaEnvelope,
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaMapMarkerAlt,
+  FaPhone,
+} from "react-icons/fa";
+import { siteData } from "../data/siteData";
+import logo from "../assets/images/logo.png";
+import "./Footer.css";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-section">
-          {/* Add logo to footer */}
-          <div className="footer-logo">
-            <img src={logo} alt="Ikram Real Estate" />
-          </div>
-          <h3>Ikram Real Estate</h3>
-          <p>Your trusted partner in finding the perfect property in Barisal, Bangladesh. </p>
-          <div className="social-icons">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+    <footer className="site-footer">
+      <div className="site-footer__container">
+        <div className="site-footer__brand">
+          <Link to="/" className="site-footer__logo">
+            <img src={logo} alt={`${siteData.name} logo`} />
+            <span>{siteData.name}</span>
+          </Link>
+
+          <p>{siteData.description}</p>
+
+          <div className="site-footer__social" aria-label="Social links">
+            <a
+              href={siteData.social.facebook}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+            >
               <FaFacebook />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a
+              href={siteData.social.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+            >
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <a
+              href={siteData.social.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+            >
               <FaLinkedin />
             </a>
           </div>
         </div>
 
-        <div className="footer-section">
-          <h3>Quick Links</h3>
+        <div className="site-footer__column">
+          <h2>Quick Links</h2>
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/projects">Projects</a></li>
-            <li><a href="/gallery">Gallery</a></li>
-            <li><a href="/contact">Contact</a></li>
+            {siteData.navLinks.map((link) => (
+              <li key={link.path}>
+                <Link to={link.path}>{link.label}</Link>
+              </li>
+            ))}
           </ul>
         </div>
 
-        <div className="footer-section">
-          <h3>Contact Info</h3>
-          <div className="contact-item">
-            <FaPhone /> <span>+880 1712-449365</span>
-          </div>
-          <div className="contact-item">
-            <FaEnvelope /> <span>info@ikramrealestate.com</span>
-          </div>
-          <div className="contact-item">
-            <FaMapMarkerAlt /> <span>Barisal, Bangladesh</span>
-          </div>
+        <div className="site-footer__column">
+          <h2>Contact Info</h2>
+
+          <address className="site-footer__contact">
+            <a href={siteData.contact.phoneHref}>
+              <FaPhone />
+              <span>{siteData.contact.phone}</span>
+            </a>
+
+            <a href={siteData.contact.emailHref}>
+              <FaEnvelope />
+              <span>{siteData.contact.email}</span>
+            </a>
+
+            <p>
+              <FaMapMarkerAlt />
+              <span>{siteData.contact.address}</span>
+            </p>
+          </address>
         </div>
       </div>
-      
-      <div className="footer-bottom">
-        <p>&copy; {currentYear} Ikram Real Estate. All rights reserved.</p>
+
+      <div className="site-footer__bottom">
+        <p>&copy; {year} {siteData.name}. All rights reserved.</p>
+        <p>Built for premium property experiences.</p>
       </div>
     </footer>
   );
