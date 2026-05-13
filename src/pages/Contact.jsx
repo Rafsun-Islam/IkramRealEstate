@@ -33,7 +33,7 @@ const initialFormData = {
 */
 
 const EXACT_MAP_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d230.0493290378981!2d90.3539598802586!3d22.698887543091203!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1778662128987!5m2!1sen!2sbd";
+  "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d230.04947992627862!2d90.3541297!3d22.6987977!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375535003869a627%3A0x9687cc538147fa67!2sIkram%20Real%20Estate%20Office!5e0!3m2!1sen!2sbd!4v1778663206377!5m2!1sen!2sbd";
 
 const Contact = () => {
   const [formData, setFormData] = useState(initialFormData);
