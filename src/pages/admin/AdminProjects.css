@@ -1,0 +1,204 @@
+.admin-projects-card {
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 32, 0.08);
+  border-radius: 24px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-projects-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid rgba(15, 23, 32, 0.08);
+}
+
+.admin-projects-card__header strong {
+  color: var(--color-primary);
+}
+
+.admin-projects-card__header span {
+  color: var(--color-text-muted);
+  font-weight: 800;
+}
+
+.admin-project-list {
+  display: grid;
+}
+
+.admin-project-row {
+  display: grid;
+  grid-template-columns: 94px minmax(0, 1fr) minmax(180px, 0.55fr) 132px;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.admin-project-row + .admin-project-row {
+  border-top: 1px solid rgba(15, 23, 32, 0.08);
+}
+
+.admin-project-row img {
+  width: 94px;
+  height: 76px;
+  border-radius: 16px;
+  object-fit: cover;
+  background: var(--color-bg-soft);
+}
+
+.admin-project-row__info {
+  min-width: 0;
+}
+
+.admin-project-row__info h2 {
+  margin: 8px 0 0;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  line-height: 1.05;
+}
+
+.admin-project-row__info p {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-status {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(201, 169, 97, 0.14);
+  color: var(--color-secondary-dark);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-project-row__meta span {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+}
+
+.admin-project-row__meta strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--color-primary);
+}
+
+.admin-project-row__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-project-row__actions a,
+.admin-project-row__actions button {
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(15, 23, 32, 0.1);
+  border-radius: 999px;
+  background: var(--color-white);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background var(--transition),
+    transform var(--transition);
+}
+
+.admin-project-row__actions a:hover,
+.admin-project-row__actions button:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+  background: rgba(201, 169, 97, 0.08);
+}
+
+@media (max-width: 1100px) {
+  .admin-project-row {
+    grid-template-columns: 86px minmax(0, 1fr) 120px;
+  }
+
+  .admin-project-row__meta {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-projects-card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .admin-projects-card__header {
+    border: 1px solid rgba(15, 23, 32, 0.08);
+    border-radius: 18px;
+    background: var(--color-white);
+    margin-bottom: 14px;
+  }
+
+  .admin-project-list {
+    gap: 14px;
+  }
+
+  .admin-project-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid rgba(15, 23, 32, 0.08);
+    border-radius: 20px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-project-row + .admin-project-row {
+    border-top: 1px solid rgba(15, 23, 32, 0.08);
+  }
+
+  .admin-project-row img {
+    width: 100%;
+    height: 190px;
+    border-radius: 18px;
+  }
+
+  .admin-project-row__info h2 {
+    font-size: 1.6rem;
+  }
+
+  .admin-project-row__meta {
+    display: block;
+  }
+
+  .admin-project-row__actions {
+    justify-content: stretch;
+  }
+
+  .admin-project-row__actions a,
+  .admin-project-row__actions button {
+    flex: 1;
+    width: auto;
+    height: 44px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-project-row img {
+    height: 170px;
+  }
+
+  .admin-projects-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
