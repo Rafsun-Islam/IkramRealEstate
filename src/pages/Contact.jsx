@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 
 import { siteData } from "../data/siteData";
+import { createContactMessage } from "../services/contactService";
 import contactHeroImage from "../assets/images/hero/hero-5.webp";
 import "./Contact.css";
 
@@ -19,18 +20,6 @@ const initialFormData = {
   subject: "",
   message: "",
 };
-
-/*
-  Exact Google Maps location:
-  1. Open the exact office location in Google Maps
-  2. Click Share
-  3. Click Embed a map
-  4. Copy the iframe src URL only
-  5. Replace the value below
-
-  Example:
-  const EXACT_MAP_EMBED_URL = "https://www.google.com/maps/embed?pb=...";
-*/
 
 const EXACT_MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d230.04947992627862!2d90.3541297!3d22.6987977!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375535003869a627%3A0x9687cc538147fa67!2sIkram%20Real%20Estate%20Office!5e0!3m2!1sen!2sbd!4v1778663206377!5m2!1sen!2sbd";
@@ -84,11 +73,21 @@ const Contact = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus({ type: "", message: "" });
 
-    window.setTimeout(() => {
+    try {
+      await createContactMessage({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        subject: formData.subject.trim() || "Project Inquiry",
+        message: formData.message.trim(),
+        source: "website-contact-form",
+      });
+
       setSubmitStatus({
         type: "success",
         message:
@@ -96,8 +95,15 @@ const Contact = () => {
       });
 
       setFormData(initialFormData);
+    } catch (error) {
+      setSubmitStatus({
+        type: "error",
+        message:
+          "Sorry, your message could not be sent right now. Please try again or call us directly.",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 700);
+    }
   };
 
   return (
