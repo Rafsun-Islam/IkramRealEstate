@@ -1,227 +1,298 @@
-import { useState, useRef } from 'react';
-//import emailjs from '@emailjs/browser';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaPaperPlane } from 'react-icons/fa';
-import './Contact.css';
+import { useState } from "react";
+import {
+  FaClock,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaPaperPlane,
+  FaPhoneAlt,
+  FaWhatsapp,
+} from "react-icons/fa";
+
+import { siteData } from "../data/siteData";
+import contactHeroImage from "../assets/images/hero/hero-5.webp";
+import "./Contact.css";
+
+const initialFormData = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
+
+/*
+  Exact Google Maps location:
+  1. Open the exact office location in Google Maps
+  2. Click Share
+  3. Click Embed a map
+  4. Copy the iframe src URL only
+  5. Replace the value below
+
+  Example:
+  const EXACT_MAP_EMBED_URL = "https://www.google.com/maps/embed?pb=...";
+*/
+
+const EXACT_MAP_EMBED_URL =
+  "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d230.0493290378981!2d90.3539598802586!3d22.698887543091203!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1778662128987!5m2!1sen!2sbd";
 
 const Contact = () => {
-  const form = useRef();
-  const [formData, setFormData] = useState({
-    from_name: '',
-    from_email: '',
-    phone_number: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    // Clear status when user types
-    if (submitStatus.message) {
-      setSubmitStatus({ type: '', message: '' });
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus({ type: '', message: '' });
-
-    // Replace these with your EmailJS credentials
-    emailjs.sendForm(
-      'YOUR_SERVICE_ID',        // Replace with your EmailJS Service ID
-      'YOUR_TEMPLATE_ID',       // Replace with your EmailJS Template ID
-      form.current,
-      'YOUR_PUBLIC_KEY'         // Replace with your EmailJS Public Key
-    )
-    .then((result) => {
-      console.log(result.text);
-      setSubmitStatus({
-        type: 'success',
-        message: 'Thank you!  Your message has been sent successfully.  We will contact you soon.'
-      });
-      setFormData({
-        from_name: '',
-        from_email: '',
-        phone_number:  '',
-        message: ''
-      });
-      setIsSubmitting(false);
-    }, (error) => {
-      console.log(error.text);
-      setSubmitStatus({
-        type: 'error',
-        message: 'Sorry, there was an error sending your message. Please try again or call us directly.'
-      });
-      setIsSubmitting(false);
-    });
-  };
-
-  const contactInfo = [
+  const contactCards = [
     {
-      icon: <FaPhone />,
-      title: 'Phone',
-      details: ['+880 1XXX-XXXXXX', '+880 2-XXXXXXXX'],
-      link: 'tel:+8801XXXXXXXXX'
+      icon: <FaPhoneAlt />,
+      title: "Call Us",
+      details: [siteData.contact.phone],
+      link: siteData.contact.phoneHref,
+      linkText: "Call now",
     },
     {
       icon: <FaEnvelope />,
-      title: 'Email',
-      details: ['info@ikramrealestate.com', 'sales@ikramrealestate.com'],
-      link: 'mailto:info@ikramrealestate.com'
+      title: "Email Us",
+      details: [siteData.contact.email],
+      link: `mailto:${siteData.contact.email}`,
+      linkText: "Send email",
+    },
+    {
+      icon: <FaWhatsapp />,
+      title: "WhatsApp",
+      details: ["Chat with our property team"],
+      link: siteData.contact.phoneHref,
+      linkText: "Start chat",
     },
     {
       icon: <FaMapMarkerAlt />,
-      title: 'Address',
-      details: ['House 123, Road 45', 'Gulshan-2, Dhaka-1212', 'Bangladesh'],
-      link: null
+      title: "Visit Office",
+      details: [siteData.contact.address],
+      link: null,
+      linkText: "",
     },
-    {
-      icon: <FaClock />,
-      title: 'Working Hours',
-      details: ['Saturday - Thursday: 10 AM - 7 PM', 'Friday:  Closed'],
-      link: null
-    }
   ];
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }));
+
+    if (submitStatus.message) {
+      setSubmitStatus({ type: "", message: "" });
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    window.setTimeout(() => {
+      setSubmitStatus({
+        type: "success",
+        message:
+          "Thank you! Your message has been received. Our team will contact you soon.",
+      });
+
+      setFormData(initialFormData);
+      setIsSubmitting(false);
+    }, 700);
+  };
 
   return (
     <div className="contact-page">
-      {/* Hero Section */}
       <section className="contact-hero">
-        <div className="contact-hero-content">
-          <span className="section-label">Get In Touch</span>
-          <h1>Contact Us</h1>
-          <p>We're here to help you find your dream home.  Reach out to us today. </p>
+        <div className="contact-hero__media">
+          <img
+            src={contactHeroImage}
+            alt="Contact Ikram Real Estate"
+            fetchPriority="high"
+            decoding="async"
+            width="1600"
+            height="1000"
+          />
+        </div>
+
+        <div className="contact-hero__overlay" />
+
+        <div className="container contact-hero__content">
+          <span className="contact-hero__eyebrow">Get In Touch</span>
+
+          <h1>Let’s Talk About Your Property Needs</h1>
+
+          <p>
+            Contact Ikram Real Estate for project information, property
+            guidance, pricing details, or a scheduled visit with our team.
+          </p>
         </div>
       </section>
 
-      {/* Contact Content */}
-      <section className="contact-content">
-        <div className="container-wide">
-          <div className="contact-grid">
-            {/* Contact Form */}
-            <div className="contact-form-section">
-              <h2>Send Us a Message</h2>
-              <p className="form-description">
-                Fill out the form below and our team will get back to you within 24 hours.
-              </p>
+      <section className="section contact-section">
+        <div className="container contact-grid">
+          <div className="contact-form-card">
+            <span className="eyebrow">Send Message</span>
 
-              <form ref={form} onSubmit={handleSubmit} className="contact-form">
+            <h2>Request property information</h2>
+
+            <p>
+              Fill out the form and our team will get back to you with the right
+              property information as soon as possible.
+            </p>
+
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="from_name">Full Name *</label>
+                  <label htmlFor="name">Full Name *</label>
                   <input
+                    id="name"
+                    name="name"
                     type="text"
-                    id="from_name"
-                    name="from_name"
-                    value={formData.from_name}
+                    value={formData.name}
                     onChange={handleChange}
-                    required
                     placeholder="Enter your full name"
+                    required
                   />
                 </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="from_email">Email Address *</label>
-                    <input
-                      type="email"
-                      id="from_email"
-                      name="from_email"
-                      value={formData.from_email}
-                      onChange={handleChange}
-                      required
-                      placeholder="your. email@example.com"
-                    />
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="phone">Phone Number *</label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+880 1XXX-XXXXXX"
+                    required
+                  />
+                </div>
+              </div>
 
-                  <div className="form-group">
-                    <label htmlFor="phone_number">Phone Number *</label>
-                    <input
-                      type="tel"
-                      id="phone_number"
-                      name="phone_number"
-                      value={formData.phone_number}
-                      onChange={handleChange}
-                      required
-                      placeholder="+880 1XXX-XXXXXX"
-                    />
-                  </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                  />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="message">Message *</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="6"
-                    value={formData.message}
+                  <label htmlFor="subject">Subject</label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    value={formData.subject}
                     onChange={handleChange}
-                    required
-                    placeholder="Tell us about your requirements..."
-                  ></textarea>
+                    placeholder="Project inquiry"
+                  />
                 </div>
+              </div>
 
-                {submitStatus.message && (
-                  <div className={`submit-message ${submitStatus.type}`}>
-                    {submitStatus. message}
-                  </div>
+              <div className="form-group">
+                <label htmlFor="message">Message *</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="6"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Tell us about your property requirements..."
+                  required
+                />
+              </div>
+
+              {submitStatus.message && (
+                <div className={`submit-message ${submitStatus.type}`}>
+                  {submitStatus.message}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <span>Sending...</span>
+                ) : (
+                  <>
+                    <FaPaperPlane aria-hidden="true" />
+                    <span>Send Message</span>
+                  </>
                 )}
+              </button>
+            </form>
+          </div>
 
-                <button 
-                  type="submit" 
-                  className="submit-button"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <span>Sending...</span>
-                  ) : (
-                    <>
-                      <FaPaperPlane />
-                      <span>Send Message</span>
-                    </>
-                  )}
-                </button>
-              </form>
-            </div>
+          <aside className="contact-sidebar">
+            <div className="contact-info-panel">
+              <span className="eyebrow">Contact Information</span>
 
-            {/* Contact Information */}
-            <div className="contact-info-section">
-              <h2>Contact Information</h2>
-              <p className="info-description">
-                Reach out to us through any of the following channels
+              <h2>Reach our team directly</h2>
+
+              <p>
+                We are available to answer your questions, schedule visits, and
+                guide you through available property options.
               </p>
 
-              <div className="contact-info-cards">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="info-card">
-                    <div className="info-icon">{info.icon}</div>
-                    <div className="info-content">
-                      <h3>{info.title}</h3>
-                      {info.details.map((detail, idx) => (
-                        info.link && idx === 0 ? (
-                          <a key={idx} href={info.link}>{detail}</a>
-                        ) : (
-                          <p key={idx}>{detail}</p>
-                        )
+              <div className="contact-info-list">
+                {contactCards.map((card) => (
+                  <article className="contact-info-card" key={card.title}>
+                    <div className="contact-info-card__icon">{card.icon}</div>
+
+                    <div>
+                      <h3>{card.title}</h3>
+
+                      {card.details.map((detail) => (
+                        <p key={detail}>{detail}</p>
                       ))}
+
+                      {card.link && <a href={card.link}>{card.linkText}</a>}
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
+            </div>
 
-              {/* Map Placeholder */}
-              <div className="map-container">
-                <div className="map-placeholder">
-                  <FaMapMarkerAlt />
-                  <p>Map will be displayed here</p>
-                  <span>You can integrate Google Maps here</span>
+            <div className="contact-hours-card">
+              <div>
+                <FaClock aria-hidden="true" />
+              </div>
+
+              <h3>Office Hours</h3>
+
+              <p>Saturday - Thursday</p>
+              <strong>10:00 AM - 7:00 PM</strong>
+
+              <span>Friday: Closed</span>
+            </div>
+
+            <div className="contact-map-card contact-map-card--embed">
+              <div className="contact-map-card__header">
+                <FaMapMarkerAlt aria-hidden="true" />
+
+                <div>
+                  <h3>Office Location</h3>
+                  <p>{siteData.contact.address}</p>
                 </div>
               </div>
+
+              <iframe
+                title="Ikram Real Estate office location"
+                src={EXACT_MAP_EMBED_URL}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
             </div>
-          </div>
+          </aside>
         </div>
       </section>
     </div>
