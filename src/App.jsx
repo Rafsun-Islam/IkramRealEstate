@@ -9,14 +9,17 @@ import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 import "./styles/App.css";
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
+
       <div className="app">
         <Navbar />
+
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -25,8 +28,10 @@ function App() {
             <Route path="/projects/:slug" element={<ProjectDetails />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+
         <Footer />
         <Analytics />
       </div>
