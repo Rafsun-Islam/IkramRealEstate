@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
 const SITE_NAME = "Ikram Real Estate";
-const SITE_URL = "https://ikramrealestate.vercel.app/";
+const SITE_URL = "https://ikramrealestate.vercel.app";
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 const DEFAULT_DESCRIPTION =

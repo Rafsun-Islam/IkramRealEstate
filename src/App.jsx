@@ -5,7 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
-import AppSEO from "./components/AppSEO";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "./context/AuthContext";
@@ -78,7 +78,7 @@ function App() {
     <Router>
       <AuthProvider>
         <ScrollToTop />
-        <AppSEO />
+        
         <AppLayout />
       </AuthProvider>
     </Router>

@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { usePageTitle } from "../../hooks/usePageTitle";
-import SEO from "../../components/SEO";
 import {
   FaEnvelope,
   FaInbox,
@@ -14,6 +12,8 @@ import {
   getContactMessages,
   updateMessageStatus,
 } from "../../services/contactService";
+import SEO from "../../components/SEO";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import "./AdminMessages.css";
 
 const formatMessageDate = (timestamp) => {
@@ -27,10 +27,14 @@ const formatMessageDate = (timestamp) => {
 
 const AdminMessages = () => {
   usePageTitle("Client Messages");
+
   const [messages, setMessages] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const loadMessages = async () => {
     try {
@@ -64,6 +68,7 @@ const AdminMessages = () => {
     const nextStatus = message.status === "unread" ? "read" : "unread";
 
     try {
+      setStatusMessage("");
       await updateMessageStatus(message.id, nextStatus);
       await loadMessages();
     } catch (error) {
@@ -71,24 +76,40 @@ const AdminMessages = () => {
     }
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this message?",
-    );
+  const openDeleteModal = (message) => {
+    setDeleteTarget(message);
+    setStatusMessage("");
+    setErrorMessage("");
+  };
 
-    if (!isConfirmed) return;
+  const closeDeleteModal = () => {
+    if (isDeleting) return;
+    setDeleteTarget(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      await deleteContactMessage(messageId);
+      setIsDeleting(true);
+      setErrorMessage("");
+
+      await deleteContactMessage(deleteTarget.id);
       await loadMessages();
+
+      setStatusMessage("Message deleted successfully.");
+      setDeleteTarget(null);
     } catch (error) {
       setErrorMessage(error.message || "Failed to delete message.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
     <>
       <SEO title="Client Messages" path="/admin/messages" noindex />
+
       <div className="admin-content">
         <div className="admin-page-header">
           <span>Messages</span>
@@ -126,6 +147,10 @@ const AdminMessages = () => {
             </button>
           ))}
         </div>
+
+        {statusMessage && (
+          <div className="admin-messages-alert success">{statusMessage}</div>
+        )}
 
         <div className="admin-messages-card">
           {isLoading && (
@@ -203,7 +228,7 @@ const AdminMessages = () => {
 
                       <button
                         type="button"
-                        onClick={() => handleDeleteMessage(message.id)}
+                        onClick={() => openDeleteModal(message)}
                         title="Delete message"
                       >
                         <FaTrash aria-hidden="true" />
@@ -238,6 +263,68 @@ const AdminMessages = () => {
             </div>
           )}
         </div>
+
+        {deleteTarget && (
+          <div
+            className="admin-message-delete-modal"
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              type="button"
+              className="admin-message-delete-modal__backdrop"
+              onClick={closeDeleteModal}
+              aria-label="Close delete confirmation"
+            />
+
+            <div className="admin-message-delete-modal__card">
+              <div className="admin-message-delete-modal__icon">
+                <FaTrash aria-hidden="true" />
+              </div>
+
+              <span>Delete Message</span>
+
+              <h2>Are you sure?</h2>
+
+              <p>
+                This client inquiry will be permanently removed from the admin
+                dashboard. This action cannot be undone.
+              </p>
+
+              <div className="admin-message-delete-modal__preview">
+                <div className="admin-message-delete-modal__avatar">
+                  {(deleteTarget.name || "C").charAt(0).toUpperCase()}
+                </div>
+
+                <div>
+                  <strong>{deleteTarget.name || "Client Inquiry"}</strong>
+                  <small>{deleteTarget.subject || "Project Inquiry"}</small>
+                  <p>{deleteTarget.message}</p>
+                </div>
+              </div>
+
+              <div className="admin-message-delete-modal__actions">
+                <button
+                  type="button"
+                  className="admin-message-delete-modal__cancel"
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="admin-message-delete-modal__confirm"
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Yes, Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-const SITE_URL = "https://ikramrealestate.vercel.app/";
+const SITE_URL = "https://ikramrealestate.vercel.app";
 
 export const createLocalBusinessSchema = () => ({
   "@context": "https://schema.org",
