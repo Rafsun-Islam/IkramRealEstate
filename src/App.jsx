@@ -24,6 +24,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminProjects from "./pages/admin/AdminProjects";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminMessages from "./pages/admin/AdminMessages";
+import AdminProjectForm from "./pages/admin/AdminProjectForm";
 import "./styles/App.css";
 
 const AppLayout = () => {
@@ -57,6 +58,8 @@ const AppLayout = () => {
             <Route path="projects" element={<AdminProjects />} />
             <Route path="gallery" element={<AdminGallery />} />
             <Route path="messages" element={<AdminMessages />} />
+            <Route path="projects/new" element={<AdminProjectForm />} />
+            <Route path="projects/:id/edit" element={<AdminProjectForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

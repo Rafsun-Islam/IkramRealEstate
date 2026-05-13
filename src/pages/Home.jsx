@@ -6,7 +6,6 @@ import {
   FaBuilding,
   FaCheckCircle,
   FaHandshake,
-  FaHome,
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaShieldAlt,
@@ -14,15 +13,26 @@ import {
 
 import { heroSlides } from "../data/heroData";
 import { siteData } from "../data/siteData";
-import { featuredProjects, homeServices } from "../data/projectsData";
+import {
+  featuredProjects as fallbackFeaturedProjects,
+  homeServices,
+} from "../data/projectsData";
+import { getFeaturedProjects } from "../services/projectService";
 
 import companyImage from "../assets/images/company.webp";
 import "./Home.css";
 
 const SLIDE_INTERVAL = 5500;
 
+const getProjectImage = (project) => {
+  return project.coverImage || project.image || project.images?.[0]?.url || "";
+};
+
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [featuredProjects, setFeaturedProjects] = useState(
+    fallbackFeaturedProjects,
+  );
 
   const currentSlide = heroSlides[activeSlide] ?? heroSlides[0];
 
@@ -30,6 +40,22 @@ const Home = () => {
     () => [FaShieldAlt, FaMapMarkerAlt, FaHandshake, FaCheckCircle],
     [],
   );
+
+  useEffect(() => {
+    const loadFeaturedProjects = async () => {
+      try {
+        const projectsFromFirestore = await getFeaturedProjects(3);
+
+        if (projectsFromFirestore.length > 0) {
+          setFeaturedProjects(projectsFromFirestore);
+        }
+      } catch (error) {
+        setFeaturedProjects(fallbackFeaturedProjects);
+      }
+    };
+
+    loadFeaturedProjects();
+  }, []);
 
   useEffect(() => {
     if (heroSlides.length <= 1) return undefined;
@@ -248,7 +274,7 @@ const Home = () => {
               <article className="home-project-card" key={project.id}>
                 <div className="home-project-card__image">
                   <img
-                    src={project.image}
+                    src={getProjectImage(project)}
                     alt={`${project.title} property project`}
                     loading="lazy"
                     decoding="async"
@@ -257,7 +283,7 @@ const Home = () => {
                   />
 
                   <span className="home-project-card__status">
-                    {project.status}
+                    {project.statusText || project.status}
                   </span>
                 </div>
 
@@ -279,17 +305,17 @@ const Home = () => {
                   >
                     <div>
                       <span>Type</span>
-                      <strong>{project.type}</strong>
+                      <strong>{project.type || "Property"}</strong>
                     </div>
 
                     <div>
                       <span>Size</span>
-                      <strong>{project.size}</strong>
+                      <strong>{project.size || "On request"}</strong>
                     </div>
 
                     <div>
                       <span>Price</span>
-                      <strong>{project.price}</strong>
+                      <strong>{project.price || "Contact"}</strong>
                     </div>
                   </div>
 

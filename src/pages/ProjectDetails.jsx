@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -12,59 +13,112 @@ import {
   FaRulerCombined,
 } from "react-icons/fa";
 
-import { projects } from "../data/projectsData";
+import { getProjectBySlug } from "../services/projectService";
+import { projects as fallbackProjects } from "../data/projectsData";
 import { siteData } from "../data/siteData";
 import "./Projects.css";
 
+const getProjectImage = (project) => {
+  return (
+    project?.coverImage || project?.image || project?.images?.[0]?.url || ""
+  );
+};
+
+const getProjectGallery = (project) => {
+  if (project?.images?.length) {
+    return project.images.map((image) => image.url);
+  }
+
+  return project?.gallery || [];
+};
+
 const ProjectDetails = () => {
   const { slug } = useParams();
-  const project = projects.find((item) => item.slug === slug);
+  const [firestoreProject, setFirestoreProject] = useState(null);
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
+  const [hasCheckedFirestore, setHasCheckedFirestore] = useState(false);
 
-  if (!project) {
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        setIsLoadingProject(true);
+
+        const projectFromFirestore = await getProjectBySlug(slug);
+        setFirestoreProject(projectFromFirestore);
+      } catch (error) {
+        setFirestoreProject(null);
+      } finally {
+        setIsLoadingProject(false);
+        setHasCheckedFirestore(true);
+      }
+    };
+
+    loadProject();
+  }, [slug]);
+
+  const fallbackProject = fallbackProjects.find((item) => item.slug === slug);
+  const project = firestoreProject || fallbackProject;
+
+  const galleryImages = useMemo(() => getProjectGallery(project), [project]);
+
+  if (isLoadingProject) {
+    return (
+      <div className="project-details-page">
+        <section className="section project-details-content">
+          <div className="container">
+            <div className="projects-empty">
+              <h2>Loading project...</h2>
+              <p>Please wait while we load project details.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (hasCheckedFirestore && !project) {
     return <Navigate to="/projects" replace />;
   }
 
   const specs = [
     {
       label: "Property Type",
-      value: project.type,
+      value: project.type || "Property",
       icon: FaBuilding,
     },
     {
       label: "Apartment Size",
-      value: project.size,
+      value: project.size || "On request",
       icon: FaRulerCombined,
     },
     {
       label: "Bedrooms",
-      value: project.beds,
+      value: project.beds || "N/A",
       icon: FaBed,
     },
     {
       label: "Bathrooms",
-      value: project.baths,
+      value: project.baths || "N/A",
       icon: FaBath,
     },
     {
       label: "Parking",
-      value: project.parking,
+      value: project.parking || "On request",
       icon: FaCar,
     },
     {
       label: "Completion",
-      value: project.completion,
+      value: project.completion || "On request",
       icon: FaCalendarAlt,
     },
   ];
 
   return (
     <>
-      {/* ✅ Hero is now OUTSIDE .project-details-page wrapper
-          so no parent constraint can limit its width */}
       <section className="pd-hero">
         <div className="pd-hero__media">
           <img
-            src={project.image}
+            src={getProjectImage(project)}
             alt={`${project.title} project`}
             fetchPriority="high"
             decoding="async"
@@ -97,66 +151,72 @@ const ProjectDetails = () => {
           </div>
         </div>
       </section>
-      {/* Rest of the page content */}
+
       <div className="project-details-page">
         <section className="section project-details-content">
           <div className="container project-details-grid">
             <div className="project-details-main">
-              <div className="project-details-gallery">
-                {project.gallery.map((image, index) => (
-                  <img
-                    key={`${project.slug}-${index}`}
-                    src={image}
-                    alt={`${project.title} gallery ${index + 1}`}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    width="800"
-                    height="600"
-                  />
-                ))}
-              </div>
+              {galleryImages.length > 0 && (
+                <div className="project-details-gallery">
+                  {galleryImages.map((image, index) => (
+                    <img
+                      key={`${project.slug}-${index}`}
+                      src={image}
+                      alt={`${project.title} gallery ${index + 1}`}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      width="800"
+                      height="600"
+                    />
+                  ))}
+                </div>
+              )}
 
               <div className="project-details-panel">
                 <span className="eyebrow">Project Overview</span>
 
                 <h2>{project.title}</h2>
 
-                <p>{project.overview}</p>
+                <p>{project.overview || project.description}</p>
               </div>
 
-              <div className="project-details-panel">
-                <span className="eyebrow">Key Features</span>
+              {project.features?.length > 0 && (
+                <div className="project-details-panel">
+                  <span className="eyebrow">Key Features</span>
 
-                <h2>Designed for comfort and long-term value</h2>
+                  <h2>Designed for comfort and long-term value</h2>
 
-                <div className="project-details-list">
-                  {project.features.map((feature) => (
-                    <p key={feature}>
-                      <FaCheckCircle aria-hidden="true" />
-                      <span>{feature}</span>
-                    </p>
-                  ))}
+                  <div className="project-details-list">
+                    {project.features.map((feature) => (
+                      <p key={feature}>
+                        <FaCheckCircle aria-hidden="true" />
+                        <span>{feature}</span>
+                      </p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="project-details-panel">
-                <span className="eyebrow">Amenities</span>
+              {project.amenities?.length > 0 && (
+                <div className="project-details-panel">
+                  <span className="eyebrow">Amenities</span>
 
-                <h2>Facilities included with this project</h2>
+                  <h2>Facilities included with this project</h2>
 
-                <div className="project-details-amenities">
-                  {project.amenities.map((amenity) => (
-                    <span key={amenity}>{amenity}</span>
-                  ))}
+                  <div className="project-details-amenities">
+                    {project.amenities.map((amenity) => (
+                      <span key={amenity}>{amenity}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <aside className="project-details-sidebar">
               <div className="project-details-summary">
                 <h2>Project Summary</h2>
 
-                <strong>{project.price}</strong>
+                <strong>{project.price || "Contact for price"}</strong>
 
                 <div className="project-details-specs">
                   {specs.map((spec) => {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaArrowRight,
@@ -10,13 +10,47 @@ import {
   FaSearch,
 } from "react-icons/fa";
 
-import { projectFilters, projects } from "../data/projectsData";
+import { getProjects } from "../services/projectService";
+import {
+  projectFilters,
+  projects as fallbackProjects,
+} from "../data/projectsData";
 import heroProjectImage from "../assets/images/hero/hero-3.webp";
 import "./Projects.css";
+
+const getProjectImage = (project) => {
+  return project.coverImage || project.image || project.images?.[0]?.url || "";
+};
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [firestoreProjects, setFirestoreProjects] = useState([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setIsLoadingProjects(true);
+        setErrorMessage("");
+
+        const projectsFromFirestore = await getProjects();
+        setFirestoreProjects(projectsFromFirestore);
+      } catch (error) {
+        setErrorMessage(
+          "Unable to load live projects right now. Showing saved project data.",
+        );
+      } finally {
+        setIsLoadingProjects(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
+  const projects =
+    firestoreProjects.length > 0 ? firestoreProjects : fallbackProjects;
 
   const filteredProjects = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -27,13 +61,13 @@ const Projects = () => {
 
       const matchesSearch =
         !normalizedSearch ||
-        project.title.toLowerCase().includes(normalizedSearch) ||
-        project.location.toLowerCase().includes(normalizedSearch) ||
-        project.type.toLowerCase().includes(normalizedSearch);
+        project.title?.toLowerCase().includes(normalizedSearch) ||
+        project.location?.toLowerCase().includes(normalizedSearch) ||
+        project.type?.toLowerCase().includes(normalizedSearch);
 
       return matchesFilter && matchesSearch;
     });
-  }, [activeFilter, searchTerm]);
+  }, [activeFilter, searchTerm, projects]);
 
   return (
     <div className="projects-page">
@@ -97,7 +131,21 @@ const Projects = () => {
             </div>
           </div>
 
-          {filteredProjects.length > 0 ? (
+          {isLoadingProjects && (
+            <div className="projects-empty">
+              <h2>Loading projects...</h2>
+              <p>Please wait while we load the latest property projects.</p>
+            </div>
+          )}
+
+          {!isLoadingProjects && errorMessage && (
+            <div className="projects-empty">
+              <h2>Live data unavailable</h2>
+              <p>{errorMessage}</p>
+            </div>
+          )}
+
+          {!isLoadingProjects && filteredProjects.length > 0 ? (
             <div className="projects-grid">
               {filteredProjects.map((project) => (
                 <article className="projects-card" key={project.id}>
@@ -107,7 +155,7 @@ const Projects = () => {
                     aria-label={`View ${project.title} details`}
                   >
                     <img
-                      src={project.image}
+                      src={getProjectImage(project)}
                       alt={`${project.title} property project`}
                       loading="lazy"
                       decoding="async"
@@ -128,7 +176,7 @@ const Projects = () => {
 
                     <div className="projects-card__header">
                       <h2>{project.title}</h2>
-                      <strong>{project.price}</strong>
+                      <strong>{project.price || "Contact for price"}</strong>
                     </div>
 
                     <p className="projects-card__description">
@@ -138,22 +186,22 @@ const Projects = () => {
                     <div className="projects-card__features">
                       <div>
                         <FaBuilding aria-hidden="true" />
-                        <span>{project.type}</span>
+                        <span>{project.type || "Property"}</span>
                       </div>
 
                       <div>
                         <FaRulerCombined aria-hidden="true" />
-                        <span>{project.size}</span>
+                        <span>{project.size || "Size on request"}</span>
                       </div>
 
                       <div>
                         <FaBed aria-hidden="true" />
-                        <span>{project.beds} Beds</span>
+                        <span>{project.beds || "N/A"} Beds</span>
                       </div>
 
                       <div>
                         <FaBath aria-hidden="true" />
-                        <span>{project.baths} Baths</span>
+                        <span>{project.baths || "N/A"} Baths</span>
                       </div>
                     </div>
 
@@ -168,7 +216,9 @@ const Projects = () => {
                 </article>
               ))}
             </div>
-          ) : (
+          ) : null}
+
+          {!isLoadingProjects && filteredProjects.length === 0 && (
             <div className="projects-empty">
               <h2>No projects found</h2>
               <p>
