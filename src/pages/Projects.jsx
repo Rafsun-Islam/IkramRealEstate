@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   FaArrowRight,
   FaBath,
@@ -9,6 +10,7 @@ import {
   FaRulerCombined,
   FaSearch,
 } from "react-icons/fa";
+
 import SEO from "../components/SEO";
 import { getProjects } from "../services/projectService";
 import {
@@ -16,7 +18,13 @@ import {
   projects as fallbackProjects,
 } from "../data/projectsData";
 import heroProjectImage from "../assets/images/hero/hero-3.webp";
+import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
 import "./Projects.css";
+
+const buildSrcSet = (url, widths = [400, 800, 1200]) =>
+  widths
+    .map((width) => `${buildCloudinaryUrl(url, { width })} ${width}w`)
+    .join(", ");
 
 const getProjectImage = (project) => {
   return project.coverImage || project.image || project.images?.[0]?.url || "";
@@ -25,29 +33,13 @@ const getProjectImage = (project) => {
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [firestoreProjects, setFirestoreProjects] = useState([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        setIsLoadingProjects(true);
-        setErrorMessage("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => getProjects({ pageSize: 50 }),
+  });
 
-        const projectsFromFirestore = await getProjects();
-        setFirestoreProjects(projectsFromFirestore);
-      } catch (error) {
-        setErrorMessage(
-          "Unable to load live projects right now. Showing saved project data.",
-        );
-      } finally {
-        setIsLoadingProjects(false);
-      }
-    };
-
-    loadProjects();
-  }, []);
+  const firestoreProjects = data?.items || [];
 
   const projects =
     firestoreProjects.length > 0 ? firestoreProjects : fallbackProjects;
@@ -80,7 +72,9 @@ const Projects = () => {
         <section className="projects-hero">
           <div className="projects-hero__media">
             <img
-              src={heroProjectImage}
+              src={buildCloudinaryUrl(heroProjectImage, { width: 1600 })}
+              srcSet={buildSrcSet(heroProjectImage, [800, 1200, 1600, 2000])}
+              sizes="(max-width: 768px) 100vw, 1600px"
               alt="Premium property projects by Ikram Real Estate"
               fetchPriority="high"
               decoding="async"
@@ -139,96 +133,107 @@ const Projects = () => {
               </div>
             </div>
 
-            {isLoadingProjects && (
+            {isLoading && (
               <div className="projects-empty">
                 <h2>Loading projects...</h2>
                 <p>Please wait while we load the latest property projects.</p>
               </div>
             )}
 
-            {!isLoadingProjects && errorMessage && (
+            {!isLoading && isError && (
               <div className="projects-empty">
                 <h2>Live data unavailable</h2>
-                <p>{errorMessage}</p>
+                <p>
+                  Unable to load live projects right now. Showing saved project
+                  data.
+                </p>
               </div>
             )}
 
-            {!isLoadingProjects && filteredProjects.length > 0 ? (
+            {!isLoading && filteredProjects.length > 0 ? (
               <div className="projects-grid">
-                {filteredProjects.map((project) => (
-                  <article className="projects-card" key={project.id}>
-                    <Link
-                      to={`/projects/${project.slug}`}
-                      className="projects-card__image"
-                      aria-label={`View ${project.title} details`}
-                    >
-                      <img
-                        src={getProjectImage(project)}
-                        alt={`${project.title} property project`}
-                        loading="lazy"
-                        decoding="async"
-                        width="800"
-                        height="600"
-                      />
+                {filteredProjects.map((project) => {
+                  const imageUrl = getProjectImage(project);
 
-                      <span
-                        className={`projects-card__status ${project.status}`}
-                      >
-                        {project.statusText}
-                      </span>
-                    </Link>
-
-                    <div className="projects-card__body">
-                      <p className="projects-card__location">
-                        <FaMapMarkerAlt aria-hidden="true" />
-                        <span>{project.location}</span>
-                      </p>
-
-                      <div className="projects-card__header">
-                        <h2>{project.title}</h2>
-                        <strong>{project.price || "Contact for price"}</strong>
-                      </div>
-
-                      <p className="projects-card__description">
-                        {project.description}
-                      </p>
-
-                      <div className="projects-card__features">
-                        <div>
-                          <FaBuilding aria-hidden="true" />
-                          <span>{project.type || "Property"}</span>
-                        </div>
-
-                        <div>
-                          <FaRulerCombined aria-hidden="true" />
-                          <span>{project.size || "Size on request"}</span>
-                        </div>
-
-                        <div>
-                          <FaBed aria-hidden="true" />
-                          <span>{project.beds || "N/A"} Beds</span>
-                        </div>
-
-                        <div>
-                          <FaBath aria-hidden="true" />
-                          <span>{project.baths || "N/A"} Baths</span>
-                        </div>
-                      </div>
-
+                  return (
+                    <article className="projects-card" key={project.id}>
                       <Link
                         to={`/projects/${project.slug}`}
-                        className="projects-card__link"
+                        className="projects-card__image"
+                        aria-label={`View ${project.title} details`}
                       >
-                        View Details
-                        <FaArrowRight aria-hidden="true" />
+                        <img
+                          src={buildCloudinaryUrl(imageUrl, { width: 800 })}
+                          srcSet={buildSrcSet(imageUrl, [400, 800, 1200])}
+                          sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                          alt={`${project.title} property project`}
+                          loading="lazy"
+                          decoding="async"
+                          width="800"
+                          height="600"
+                        />
+
+                        <span
+                          className={`projects-card__status ${project.status}`}
+                        >
+                          {project.statusText}
+                        </span>
                       </Link>
-                    </div>
-                  </article>
-                ))}
+
+                      <div className="projects-card__body">
+                        <p className="projects-card__location">
+                          <FaMapMarkerAlt aria-hidden="true" />
+                          <span>{project.location}</span>
+                        </p>
+
+                        <div className="projects-card__header">
+                          <h2>{project.title}</h2>
+                          <strong>
+                            {project.price || "Contact for price"}
+                          </strong>
+                        </div>
+
+                        <p className="projects-card__description">
+                          {project.description}
+                        </p>
+
+                        <div className="projects-card__features">
+                          <div>
+                            <FaBuilding aria-hidden="true" />
+                            <span>{project.type || "Property"}</span>
+                          </div>
+
+                          <div>
+                            <FaRulerCombined aria-hidden="true" />
+                            <span>{project.size || "Size on request"}</span>
+                          </div>
+
+                          <div>
+                            <FaBed aria-hidden="true" />
+                            <span>{project.beds || "N/A"} Beds</span>
+                          </div>
+
+                          <div>
+                            <FaBath aria-hidden="true" />
+                            <span>{project.baths || "N/A"} Baths</span>
+                          </div>
+                        </div>
+
+                        <Link
+                          to={`/projects/${project.slug}`}
+                          className="projects-card__link"
+                        >
+                          View Details
+                          <FaArrowRight aria-hidden="true" />
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             ) : null}
 
-            {!isLoadingProjects && filteredProjects.length === 0 && (
+            {!isLoading && filteredProjects.length === 0 && (
               <div className="projects-empty">
                 <h2>No projects found</h2>
                 <p>

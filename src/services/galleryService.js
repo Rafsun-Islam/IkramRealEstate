@@ -7,21 +7,34 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  startAfter,
+  limit as firestoreLimit,
 } from "firebase/firestore";
-
 import { db } from "../lib/firebase";
 import { uploadImageToCloudinary } from "../lib/cloudinary";
 
 const galleryCollection = collection(db, "gallery");
 
-export const getGalleryImages = async () => {
-  const galleryQuery = query(galleryCollection, orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(galleryQuery);
+export const getGalleryImages = async ({ pageSize = 12, lastDoc } = {}) => {
+  let q = query(
+    galleryCollection,
+    orderBy("createdAt", "desc"),
+    firestoreLimit(pageSize),
+  );
+  if (lastDoc)
+    q = query(
+      galleryCollection,
+      orderBy("createdAt", "desc"),
+      startAfter(lastDoc),
+      firestoreLimit(pageSize),
+    );
 
-  return snapshot.docs.map((document) => ({
-    id: document.id,
-    ...document.data(),
-  }));
+  const snapshot = await getDocs(q);
+
+  return {
+    items: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+    lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+  };
 };
 
 export const createGalleryImage = async (imageData) => {

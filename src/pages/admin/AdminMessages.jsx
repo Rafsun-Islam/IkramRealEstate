@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   FaEnvelope,
   FaInbox,
@@ -13,12 +14,10 @@ import {
   updateMessageStatus,
 } from "../../services/contactService";
 import SEO from "../../components/SEO";
-
 import "./AdminMessages.css";
 
 const formatMessageDate = (timestamp) => {
   if (!timestamp?.toDate) return "Date unavailable";
-
   return timestamp.toDate().toLocaleString("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -26,36 +25,21 @@ const formatMessageDate = (timestamp) => {
 };
 
 const AdminMessages = () => {
-  
-  const [messages, setMessages] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const loadMessages = async () => {
-    try {
-      setIsLoading(true);
-      setErrorMessage("");
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["admin-messages"],
+    queryFn: () => getContactMessages({ pageSize: 50 }),
+  });
 
-      const contactMessages = await getContactMessages();
-      setMessages(contactMessages);
-    } catch (error) {
-      setErrorMessage(error.message || "Failed to load messages.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadMessages();
-  }, []);
+  const messages = data?.items || [];
 
   const filteredMessages = useMemo(() => {
     if (activeFilter === "all") return messages;
-
     return messages.filter((message) => message.status === activeFilter);
   }, [activeFilter, messages]);
 
@@ -69,7 +53,7 @@ const AdminMessages = () => {
     try {
       setStatusMessage("");
       await updateMessageStatus(message.id, nextStatus);
-      await loadMessages();
+      await refetch();
     } catch (error) {
       setErrorMessage(error.message || "Failed to update message.");
     }
@@ -94,7 +78,7 @@ const AdminMessages = () => {
       setErrorMessage("");
 
       await deleteContactMessage(deleteTarget.id);
-      await loadMessages();
+      await refetch();
 
       setStatusMessage("Message deleted successfully.");
       setDeleteTarget(null);
@@ -157,29 +141,26 @@ const AdminMessages = () => {
               <div>
                 <FaInbox aria-hidden="true" />
               </div>
-
               <h2>Loading messages...</h2>
               <p>Please wait while we load client inquiries.</p>
             </div>
           )}
 
-          {!isLoading && errorMessage && (
+          {!isLoading && isError && (
             <div className="admin-messages-empty">
               <div>
                 <FaInbox aria-hidden="true" />
               </div>
-
               <h2>Unable to load messages</h2>
-              <p>{errorMessage}</p>
+              <p>Failed to load messages.</p>
             </div>
           )}
 
-          {!isLoading && !errorMessage && filteredMessages.length === 0 && (
+          {!isLoading && !isError && filteredMessages.length === 0 && (
             <div className="admin-messages-empty">
               <div>
                 <FaInbox aria-hidden="true" />
               </div>
-
               <h2>No messages found</h2>
               <p>
                 Messages submitted from the contact form will appear here
@@ -188,7 +169,7 @@ const AdminMessages = () => {
             </div>
           )}
 
-          {!isLoading && !errorMessage && filteredMessages.length > 0 && (
+          {!isLoading && !isError && filteredMessages.length > 0 && (
             <div className="admin-message-list">
               {filteredMessages.map((message) => (
                 <article
@@ -206,9 +187,7 @@ const AdminMessages = () => {
                       >
                         {message.status}
                       </span>
-
                       <h2>{message.subject || "Project Inquiry"}</h2>
-
                       <p>{formatMessageDate(message.createdAt)}</p>
                     </div>
 
@@ -275,19 +254,16 @@ const AdminMessages = () => {
               onClick={closeDeleteModal}
               aria-label="Close delete confirmation"
             />
-
             <div className="admin-message-delete-modal__card">
               <div className="admin-message-delete-modal__icon">
                 <FaTrash aria-hidden="true" />
               </div>
 
               <span>Delete Message</span>
-
               <h2>Are you sure?</h2>
-
               <p>
                 This client inquiry will be permanently removed from the admin
-                dashboard. This action cannot be undone.
+                dashboard.
               </p>
 
               <div className="admin-message-delete-modal__preview">

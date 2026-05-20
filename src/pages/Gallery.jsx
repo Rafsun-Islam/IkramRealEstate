@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FaExpandAlt, FaImages } from "react-icons/fa";
 
 import { getGalleryImages } from "../services/galleryService";
@@ -8,8 +9,15 @@ import fallbackGallery2 from "../assets/images/hero/hero-2.webp";
 import fallbackGallery3 from "../assets/images/hero/hero-3.webp";
 import fallbackGallery4 from "../assets/images/hero/hero-4.webp";
 import fallbackGallery5 from "../assets/images/hero/hero-5.webp";
+import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
 import "./Gallery.css";
 import SEO from "../components/SEO";
+
+const buildSrcSet = (url, widths = [400, 800, 1200]) =>
+  widths
+    .map((width) => `${buildCloudinaryUrl(url, { width })} ${width}w`)
+    .join(", ");
+
 const fallbackGalleryItems = [
   {
     id: "fallback-1",
@@ -52,60 +60,38 @@ const getGalleryImageUrl = (item) => item?.url || item?.image || "";
 
 const getCleanGalleryTitle = (item) => {
   if (item?.category) return `${item.category} Gallery`;
-
   return item?.title || "Gallery Image";
 };
 
 const Gallery = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [galleryItems, setGalleryItems] = useState(fallbackGalleryItems);
-  const [isLoadingGallery, setIsLoadingGallery] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const loadGalleryImages = async () => {
-      try {
-        setIsLoadingGallery(true);
-        setErrorMessage("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["gallery"],
+    queryFn: () => getGalleryImages({ pageSize: 50 }),
+  });
 
-        const firestoreImages = await getGalleryImages();
-
-        if (firestoreImages.length > 0) {
-          setGalleryItems(firestoreImages);
-        } else {
-          setGalleryItems(fallbackGalleryItems);
-        }
-      } catch (error) {
-        setErrorMessage(
-          "Live gallery images could not be loaded. Showing saved gallery images.",
-        );
-        setGalleryItems(fallbackGalleryItems);
-      } finally {
-        setIsLoadingGallery(false);
-      }
-    };
-
-    loadGalleryImages();
-  }, []);
+  const galleryItems =
+    data?.items?.length > 0 ? data.items : fallbackGalleryItems;
 
   const galleryFilters = useMemo(() => {
     const categories = galleryItems
       .map((item) => item.category)
       .filter(Boolean);
-
     return ["All", ...new Set(categories)];
   }, [galleryItems]);
 
   const filteredItems = useMemo(() => {
     if (activeFilter === "All") return galleryItems;
-
     return galleryItems.filter((item) => item.category === activeFilter);
   }, [activeFilter, galleryItems]);
 
   const closeModal = () => {
     setSelectedImage(null);
   };
+
+  const heroUrl = galleryHeroImage;
 
   return (
     <>
@@ -118,7 +104,9 @@ const Gallery = () => {
         <section className="gallery-hero">
           <div className="gallery-hero__media">
             <img
-              src={galleryHeroImage}
+              src={buildCloudinaryUrl(heroUrl, { width: 1600 })}
+              srcSet={buildSrcSet(heroUrl, [800, 1200, 1600, 2000])}
+              sizes="(max-width: 768px) 100vw, 1600px"
               alt="Ikram Real Estate gallery showcase"
               fetchPriority="high"
               decoding="async"
@@ -156,7 +144,7 @@ const Gallery = () => {
               </p>
             </div>
 
-            {isLoadingGallery && (
+            {isLoading && (
               <div className="gallery-state">
                 <div>
                   <FaImages aria-hidden="true" />
@@ -167,18 +155,18 @@ const Gallery = () => {
               </div>
             )}
 
-            {!isLoadingGallery && errorMessage && (
+            {!isLoading && isError && (
               <div className="gallery-state gallery-state--notice">
                 <div>
                   <FaImages aria-hidden="true" />
                 </div>
 
                 <h2>Live gallery unavailable</h2>
-                <p>{errorMessage}</p>
+                <p>Showing saved gallery images.</p>
               </div>
             )}
 
-            {!isLoadingGallery && galleryItems.length > 0 && (
+            {!isLoading && galleryItems.length > 0 && (
               <>
                 <div className="gallery-filters" aria-label="Gallery filters">
                   {galleryFilters.map((filter) => (
@@ -199,37 +187,43 @@ const Gallery = () => {
 
                 {filteredItems.length > 0 ? (
                   <div className="gallery-grid">
-                    {filteredItems.map((item) => (
-                      <article
-                        className="gallery-card"
-                        key={item.id || item.publicId || item.url}
-                      >
-                        <button
-                          type="button"
-                          className="gallery-card__button"
-                          onClick={() => setSelectedImage(item)}
-                          aria-label={`View ${getCleanGalleryTitle(item)}`}
+                    {filteredItems.map((item) => {
+                      const imageUrl = getGalleryImageUrl(item);
+
+                      return (
+                        <article
+                          className="gallery-card"
+                          key={item.id || item.publicId || item.url}
                         >
-                          <img
-                            src={getGalleryImageUrl(item)}
-                            alt={item.alt || getCleanGalleryTitle(item)}
-                            loading="lazy"
-                            decoding="async"
-                            width="800"
-                            height="600"
-                          />
+                          <button
+                            type="button"
+                            className="gallery-card__button"
+                            onClick={() => setSelectedImage(item)}
+                            aria-label={`View ${getCleanGalleryTitle(item)}`}
+                          >
+                            <img
+                              src={buildCloudinaryUrl(imageUrl, { width: 800 })}
+                              srcSet={buildSrcSet(imageUrl, [400, 800, 1200])}
+                              sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                              alt={item.alt || getCleanGalleryTitle(item)}
+                              loading="lazy"
+                              decoding="async"
+                              width="800"
+                              height="600"
+                            />
 
-                          <span className="gallery-card__overlay">
-                            <span>
-                              <small>{item.category || "General"}</small>
-                              <strong>{getCleanGalleryTitle(item)}</strong>
+                            <span className="gallery-card__overlay">
+                              <span>
+                                <small>{item.category || "General"}</small>
+                                <strong>{getCleanGalleryTitle(item)}</strong>
+                              </span>
+
+                              <FaExpandAlt aria-hidden="true" />
                             </span>
-
-                            <FaExpandAlt aria-hidden="true" />
-                          </span>
-                        </button>
-                      </article>
-                    ))}
+                          </button>
+                        </article>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="gallery-state">
@@ -271,7 +265,9 @@ const Gallery = () => {
               </button>
 
               <img
-                src={getGalleryImageUrl(selectedImage)}
+                src={buildCloudinaryUrl(getGalleryImageUrl(selectedImage), {
+                  width: 1200,
+                })}
                 alt={selectedImage.alt || getCleanGalleryTitle(selectedImage)}
               />
 

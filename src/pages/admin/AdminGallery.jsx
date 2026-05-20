@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FaImage, FaImages, FaPlus, FaTrash } from "react-icons/fa";
 
 import SEO from "../../components/SEO";
@@ -21,57 +22,44 @@ const galleryCategories = [
 
 const getCleanGalleryTitle = (image) => {
   if (image?.category) return `${image.category} Gallery`;
-
   return image?.title || "Gallery Image";
 };
 
 const AdminGallery = () => {
-  
-  const [galleryImages, setGalleryImages] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("General");
   const [activeFilter, setActiveFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const loadGalleryImages = async () => {
-    try {
-      setIsLoading(true);
-      setErrorMessage("");
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch: refetchGallery,
+  } = useQuery({
+    queryKey: ["admin-gallery"],
+    queryFn: () => getGalleryImages({ pageSize: 200 }),
+  });
 
-      const images = await getGalleryImages();
-      setGalleryImages(images);
-    } catch (error) {
-      setErrorMessage(error.message || "Failed to load gallery images.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadGalleryImages();
-  }, []);
+  const galleryImages = data?.items || [];
 
   const filters = useMemo(() => {
     const categories = galleryImages
       .map((image) => image.category)
       .filter(Boolean);
-
     return ["All", ...new Set(categories)];
   }, [galleryImages]);
 
   const filteredImages = useMemo(() => {
     if (activeFilter === "All") return galleryImages;
-
     return galleryImages.filter((image) => image.category === activeFilter);
   }, [activeFilter, galleryImages]);
 
   const handleUploadImages = async (event) => {
     const selectedFiles = Array.from(event.target.files || []);
-
     if (!selectedFiles.length) return;
 
     setIsUploading(true);
@@ -79,18 +67,24 @@ const AdminGallery = () => {
     setErrorMessage("");
 
     try {
-      for (const file of selectedFiles) {
-        const optimizedFile = await optimizeImageToWebP(file, {
-          maxWidth: 1600,
-          quality: 0.78,
-          outputName: `${selectedCategory.toLowerCase()}-${Date.now()}`,
-        });
+      const optimizedFiles = await Promise.all(
+        selectedFiles.map((file) =>
+          optimizeImageToWebP(file, {
+            maxWidth: 1600,
+            quality: 0.78,
+            outputName: `${selectedCategory.toLowerCase()}-${Date.now()}`,
+          }),
+        ),
+      );
 
-        await uploadGalleryImage(optimizedFile, selectedCategory);
-      }
+      await Promise.all(
+        optimizedFiles.map((file) =>
+          uploadGalleryImage(file, selectedCategory),
+        ),
+      );
 
       setStatusMessage(`${selectedFiles.length} image uploaded successfully.`);
-      await loadGalleryImages();
+      await refetchGallery();
     } catch (error) {
       setErrorMessage(error.message || "Failed to upload gallery images.");
       setStatusMessage("");
@@ -119,7 +113,7 @@ const AdminGallery = () => {
       setErrorMessage("");
 
       await deleteGalleryImage(deleteTarget.id);
-      await loadGalleryImages();
+      await refetchGallery();
 
       setStatusMessage("Gallery image deleted successfully.");
       setDeleteTarget(null);
@@ -205,9 +199,18 @@ const AdminGallery = () => {
             <div>
               <FaImages aria-hidden="true" />
             </div>
-
             <h2>Loading gallery...</h2>
             <p>Please wait while we load uploaded gallery images.</p>
+          </div>
+        )}
+
+        {!isLoading && isError && (
+          <div className="admin-gallery-empty">
+            <div>
+              <FaImages aria-hidden="true" />
+            </div>
+            <h2>Unable to load gallery</h2>
+            <p>Failed to load gallery images.</p>
           </div>
         )}
 
@@ -276,9 +279,7 @@ const AdminGallery = () => {
               </div>
 
               <span>Delete Image</span>
-
               <h2>Are you sure?</h2>
-
               <p>
                 This gallery image will be removed from your website gallery.
                 This action cannot be undone.

@@ -1,41 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 
 import { deleteProject, getProjects } from "../../services/projectService";
-
 import "./AdminProjects.css";
 import SEO from "../../components/SEO";
+
 const getProjectImage = (project) => {
   return project.coverImage || project.image || project.images?.[0]?.url || "";
 };
 
 const AdminProjects = () => {
- 
-  const [adminProjects, setAdminProjects] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const loadProjects = async () => {
-    try {
-      setIsLoading(true);
-      setErrorMessage("");
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["admin-projects"],
+    queryFn: () => getProjects({ pageSize: 100 }),
+  });
 
-      const projects = await getProjects();
-      setAdminProjects(projects);
-    } catch (error) {
-      setErrorMessage(error.message || "Failed to load projects.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
+  const adminProjects = data?.items || [];
 
   const openDeleteModal = (project) => {
     setDeleteTarget(project);
@@ -56,7 +43,7 @@ const AdminProjects = () => {
       setErrorMessage("");
 
       await deleteProject(deleteTarget.id);
-      await loadProjects();
+      await refetch();
 
       setStatusMessage("Project deleted successfully.");
       setDeleteTarget(null);
@@ -101,11 +88,13 @@ const AdminProjects = () => {
             <div className="admin-projects-message">Loading...</div>
           )}
 
-          {errorMessage && (
-            <div className="admin-projects-message error">{errorMessage}</div>
+          {!isLoading && isError && (
+            <div className="admin-projects-message error">
+              Failed to load projects.
+            </div>
           )}
 
-          {!isLoading && !errorMessage && adminProjects.length === 0 && (
+          {!isLoading && !isError && adminProjects.length === 0 && (
             <div className="admin-projects-message">
               No projects added yet. Click “Add Project” to create one.
             </div>
@@ -126,9 +115,7 @@ const AdminProjects = () => {
                     <span className={`admin-status ${project.status}`}>
                       {project.statusText}
                     </span>
-
                     <h2>{project.title}</h2>
-
                     <p>{project.location}</p>
                   </div>
 
@@ -141,14 +128,12 @@ const AdminProjects = () => {
                     <Link to={`/projects/${project.slug}`} title="View project">
                       <FaEye />
                     </Link>
-
                     <Link
                       to={`/admin/projects/${project.id}/edit`}
                       title="Edit project"
                     >
                       <FaEdit />
                     </Link>
-
                     <button
                       type="button"
                       title="Delete project"
@@ -175,19 +160,16 @@ const AdminProjects = () => {
               onClick={closeDeleteModal}
               aria-label="Close delete confirmation"
             />
-
             <div className="admin-project-delete-modal__card">
               <div className="admin-project-delete-modal__icon">
                 <FaTrash aria-hidden="true" />
               </div>
 
               <span>Delete Project</span>
-
               <h2>Are you sure?</h2>
-
               <p>
                 This project will be removed from the admin dashboard and public
-                website. This action cannot be undone.
+                website.
               </p>
 
               <div className="admin-project-delete-modal__preview">
@@ -195,7 +177,6 @@ const AdminProjects = () => {
                   src={getProjectImage(deleteTarget)}
                   alt={deleteTarget.title}
                 />
-
                 <div>
                   <strong>{deleteTarget.title}</strong>
                   <small>{deleteTarget.location || "Project location"}</small>

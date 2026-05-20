@@ -8,8 +8,9 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  startAfter,
+  limit as firestoreLimit,
 } from "firebase/firestore";
-
 import { db } from "../lib/firebase";
 
 const messagesCollection = collection(db, "messages");
@@ -25,14 +26,26 @@ export const createContactMessage = async (messageData) => {
   return documentRef.id;
 };
 
-export const getContactMessages = async () => {
-  const messagesQuery = query(messagesCollection, orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(messagesQuery);
+export const getContactMessages = async ({ pageSize = 20, lastDoc } = {}) => {
+  let q = query(
+    messagesCollection,
+    orderBy("createdAt", "desc"),
+    firestoreLimit(pageSize),
+  );
+  if (lastDoc)
+    q = query(
+      messagesCollection,
+      orderBy("createdAt", "desc"),
+      startAfter(lastDoc),
+      firestoreLimit(pageSize),
+    );
 
-  return snapshot.docs.map((document) => ({
-    id: document.id,
-    ...document.data(),
-  }));
+  const snapshot = await getDocs(q);
+
+  return {
+    items: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+    lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+  };
 };
 
 export const updateMessageStatus = async (messageId, status) => {

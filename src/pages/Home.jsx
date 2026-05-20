@@ -19,11 +19,17 @@ import {
   homeServices,
 } from "../data/projectsData";
 import { getFeaturedProjects } from "../services/projectService";
+import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
 
 import companyImage from "../assets/images/company.webp";
 import "./Home.css";
 
 const SLIDE_INTERVAL = 5500;
+
+const buildSrcSet = (url, widths = [480, 800, 1200, 1600]) =>
+  widths
+    .map((width) => `${buildCloudinaryUrl(url, { width })} ${width}w`)
+    .join(", ");
 
 const getProjectImage = (project) => {
   return project.coverImage || project.image || project.images?.[0]?.url || "";
@@ -90,6 +96,8 @@ const Home = () => {
     setActiveSlide(index);
   };
 
+  const heroImageUrl = currentSlide?.image || "";
+
   return (
     <>
       <SEO
@@ -104,7 +112,9 @@ const Home = () => {
         <div className="home-hero__media">
           <img
             key={currentSlide.id}
-            src={currentSlide.image}
+            src={buildCloudinaryUrl(heroImageUrl, { width: 1600 })}
+            srcSet={buildSrcSet(heroImageUrl, [800, 1200, 1600, 2000])}
+            sizes="(max-width: 768px) 100vw, 1600px"
             alt={currentSlide.alt}
             fetchPriority={activeSlide === 0 ? "high" : "auto"}
             decoding="async"
@@ -176,7 +186,9 @@ const Home = () => {
           <div className="home-about-preview__visual">
             <div className="home-about-preview__image">
               <img
-                src={companyImage}
+                src={buildCloudinaryUrl(companyImage, { width: 1000 })}
+                srcSet={buildSrcSet(companyImage, [600, 800, 1000, 1200])}
+                sizes="(max-width: 768px) 90vw, 500px"
                 alt="Ikram Real Estate corporate office"
                 loading="lazy"
                 decoding="async"
@@ -276,65 +288,71 @@ const Home = () => {
           </div>
 
           <div className="home-projects__grid">
-            {featuredProjects.map((project) => (
-              <article className="home-project-card" key={project.id}>
-                <div className="home-project-card__image">
-                  <img
-                    src={getProjectImage(project)}
-                    alt={`${project.title} property project`}
-                    loading="lazy"
-                    decoding="async"
-                    width="800"
-                    height="600"
-                  />
+            {featuredProjects.map((project) => {
+              const imageUrl = getProjectImage(project);
 
-                  <span className="home-project-card__status">
-                    {project.statusText || project.status}
-                  </span>
-                </div>
+              return (
+                <article className="home-project-card" key={project.id}>
+                  <div className="home-project-card__image">
+                    <img
+                      src={buildCloudinaryUrl(imageUrl, { width: 800 })}
+                      srcSet={buildSrcSet(imageUrl, [400, 600, 800, 1200])}
+                      sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                      alt={`${project.title} property project`}
+                      loading="lazy"
+                      decoding="async"
+                      width="800"
+                      height="600"
+                    />
 
-                <div className="home-project-card__body">
-                  <p className="home-project-card__location">
-                    <FaMapMarkerAlt aria-hidden="true" />
-                    <span>{project.location}</span>
-                  </p>
-
-                  <h3>{project.title}</h3>
-
-                  <p className="home-project-card__description">
-                    {project.description}
-                  </p>
-
-                  <div
-                    className="home-project-card__meta"
-                    aria-label={`${project.title} project details`}
-                  >
-                    <div>
-                      <span>Type</span>
-                      <strong>{project.type || "Property"}</strong>
-                    </div>
-
-                    <div>
-                      <span>Size</span>
-                      <strong>{project.size || "On request"}</strong>
-                    </div>
-
-                    <div>
-                      <span>Price</span>
-                      <strong>{project.price || "Contact"}</strong>
-                    </div>
+                    <span className="home-project-card__status">
+                      {project.statusText || project.status}
+                    </span>
                   </div>
 
-                  <Link
-                    to={`/projects/${project.slug}`}
-                    className="home-project-card__link"
-                  >
-                    View Details
-                    <FaArrowRight aria-hidden="true" />
-                  </Link>
-                </div>
-              </article>
-            ))}
+                  <div className="home-project-card__body">
+                    <p className="home-project-card__location">
+                      <FaMapMarkerAlt aria-hidden="true" />
+                      <span>{project.location}</span>
+                    </p>
+
+                    <h3>{project.title}</h3>
+
+                    <p className="home-project-card__description">
+                      {project.description}
+                    </p>
+
+                    <div
+                      className="home-project-card__meta"
+                      aria-label={`${project.title} project details`}
+                    >
+                      <div>
+                        <span>Type</span>
+                        <strong>{project.type || "Property"}</strong>
+                      </div>
+
+                      <div>
+                        <span>Size</span>
+                        <strong>{project.size || "On request"}</strong>
+                      </div>
+
+                      <div>
+                        <span>Price</span>
+                        <strong>{project.price || "Contact"}</strong>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/projects/${project.slug}`}
+                      className="home-project-card__link"
+                    >
+                      View Details
+                      <FaArrowRight aria-hidden="true" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           <div className="home-projects__footer">

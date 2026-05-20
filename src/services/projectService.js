@@ -11,21 +11,34 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  startAfter,
 } from "firebase/firestore";
-
 import { db } from "../lib/firebase";
+
 import { uploadImageToCloudinary } from "../lib/cloudinary";
 
 const projectsCollection = collection(db, "projects");
 
-export const getProjects = async () => {
-  const projectsQuery = query(projectsCollection, orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(projectsQuery);
+export const getProjects = async ({ pageSize = 12, lastDoc } = {}) => {
+  let q = query(
+    projectsCollection,
+    orderBy("createdAt", "desc"),
+    firestoreLimit(pageSize),
+  );
+  if (lastDoc)
+    q = query(
+      projectsCollection,
+      orderBy("createdAt", "desc"),
+      startAfter(lastDoc),
+      firestoreLimit(pageSize),
+    );
 
-  return snapshot.docs.map((document) => ({
-    id: document.id,
-    ...document.data(),
-  }));
+  const snapshot = await getDocs(q);
+
+  return {
+    items: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+    lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+  };
 };
 
 export const getProjectById = async (projectId) => {
