@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   FaArrowRight,
   FaAward,
@@ -19,7 +20,7 @@ import {
   homeServices,
 } from "../data/projectsData";
 import { getFeaturedProjects } from "../services/projectService";
-import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
+import { buildCloudinaryUrl, isCloudinaryUrl } from "../utils/cloudinaryUrl";
 
 import companyImage from "../assets/images/company.webp";
 import "./Home.css";
@@ -37,9 +38,14 @@ const getProjectImage = (project) => {
 
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [featuredProjects, setFeaturedProjects] = useState(
-    fallbackFeaturedProjects,
-  );
+
+  const { data: featuredFromDb } = useQuery({
+    queryKey: ["featured-projects"],
+    queryFn: () => getFeaturedProjects(3),
+  });
+
+  const featuredProjects =
+    featuredFromDb?.length > 0 ? featuredFromDb : fallbackFeaturedProjects;
 
   const currentSlide = heroSlides[activeSlide] ?? heroSlides[0];
 
@@ -47,22 +53,6 @@ const Home = () => {
     () => [FaShieldAlt, FaMapMarkerAlt, FaHandshake, FaCheckCircle],
     [],
   );
-
-  useEffect(() => {
-    const loadFeaturedProjects = async () => {
-      try {
-        const projectsFromFirestore = await getFeaturedProjects(3);
-
-        if (projectsFromFirestore.length > 0) {
-          setFeaturedProjects(projectsFromFirestore);
-        }
-      } catch (error) {
-        setFeaturedProjects(fallbackFeaturedProjects);
-      }
-    };
-
-    loadFeaturedProjects();
-  }, []);
 
   useEffect(() => {
     if (heroSlides.length <= 1) return undefined;
@@ -97,6 +87,9 @@ const Home = () => {
   };
 
   const heroImageUrl = currentSlide?.image || "";
+  const heroIsCloudinary = isCloudinaryUrl(heroImageUrl);
+
+  const companyIsCloudinary = isCloudinaryUrl(companyImage);
 
   return (
     <>
@@ -112,9 +105,19 @@ const Home = () => {
         <div className="home-hero__media">
           <img
             key={currentSlide.id}
-            src={buildCloudinaryUrl(heroImageUrl, { width: 1600 })}
-            srcSet={buildSrcSet(heroImageUrl, [800, 1200, 1600, 2000])}
-            sizes="(max-width: 768px) 100vw, 1600px"
+            src={
+              heroIsCloudinary
+                ? buildCloudinaryUrl(heroImageUrl, { width: 1600 })
+                : heroImageUrl
+            }
+            srcSet={
+              heroIsCloudinary
+                ? buildSrcSet(heroImageUrl, [800, 1200, 1600, 2000])
+                : undefined
+            }
+            sizes={
+              heroIsCloudinary ? "(max-width: 768px) 100vw, 1600px" : undefined
+            }
             alt={currentSlide.alt}
             fetchPriority={activeSlide === 0 ? "high" : "auto"}
             decoding="async"
@@ -186,9 +189,21 @@ const Home = () => {
           <div className="home-about-preview__visual">
             <div className="home-about-preview__image">
               <img
-                src={buildCloudinaryUrl(companyImage, { width: 1000 })}
-                srcSet={buildSrcSet(companyImage, [600, 800, 1000, 1200])}
-                sizes="(max-width: 768px) 90vw, 500px"
+                src={
+                  companyIsCloudinary
+                    ? buildCloudinaryUrl(companyImage, { width: 1000 })
+                    : companyImage
+                }
+                srcSet={
+                  companyIsCloudinary
+                    ? buildSrcSet(companyImage, [600, 800, 1000, 1200])
+                    : undefined
+                }
+                sizes={
+                  companyIsCloudinary
+                    ? "(max-width: 768px) 90vw, 500px"
+                    : undefined
+                }
                 alt="Ikram Real Estate corporate office"
                 loading="lazy"
                 decoding="async"
@@ -290,14 +305,27 @@ const Home = () => {
           <div className="home-projects__grid">
             {featuredProjects.map((project) => {
               const imageUrl = getProjectImage(project);
+              const isCloud = isCloudinaryUrl(imageUrl);
 
               return (
                 <article className="home-project-card" key={project.id}>
                   <div className="home-project-card__image">
                     <img
-                      src={buildCloudinaryUrl(imageUrl, { width: 800 })}
-                      srcSet={buildSrcSet(imageUrl, [400, 600, 800, 1200])}
-                      sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                      src={
+                        isCloud
+                          ? buildCloudinaryUrl(imageUrl, { width: 800 })
+                          : imageUrl
+                      }
+                      srcSet={
+                        isCloud
+                          ? buildSrcSet(imageUrl, [400, 600, 800, 1200])
+                          : undefined
+                      }
+                      sizes={
+                        isCloud
+                          ? "(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                          : undefined
+                      }
                       alt={`${project.title} property project`}
                       loading="lazy"
                       decoding="async"

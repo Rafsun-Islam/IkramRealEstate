@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   FaEnvelope,
   FaInbox,
@@ -31,12 +31,22 @@ const AdminMessages = () => {
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
     queryKey: ["admin-messages"],
-    queryFn: () => getContactMessages({ pageSize: 50 }),
+    queryFn: ({ pageParam }) =>
+      getContactMessages({ pageSize: 20, lastDoc: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.lastDoc ?? undefined,
   });
 
-  const messages = data?.items || [];
+  const messages = data?.pages?.flatMap((page) => page.items) || [];
 
   const filteredMessages = useMemo(() => {
     if (activeFilter === "all") return messages;
@@ -170,75 +180,94 @@ const AdminMessages = () => {
           )}
 
           {!isLoading && !isError && filteredMessages.length > 0 && (
-            <div className="admin-message-list">
-              {filteredMessages.map((message) => (
-                <article
-                  className={
-                    message.status === "unread"
-                      ? "admin-message-card is-unread"
-                      : "admin-message-card"
-                  }
-                  key={message.id}
-                >
-                  <div className="admin-message-card__top">
-                    <div>
-                      <span
-                        className={`admin-message-status ${message.status}`}
-                      >
-                        {message.status}
-                      </span>
-                      <h2>{message.subject || "Project Inquiry"}</h2>
-                      <p>{formatMessageDate(message.createdAt)}</p>
+            <>
+              <div className="admin-message-list">
+                {filteredMessages.map((message) => (
+                  <article
+                    className={
+                      message.status === "unread"
+                        ? "admin-message-card is-unread"
+                        : "admin-message-card"
+                    }
+                    key={message.id}
+                  >
+                    <div className="admin-message-card__top">
+                      <div>
+                        <span
+                          className={`admin-message-status ${message.status}`}
+                        >
+                          {message.status}
+                        </span>
+
+                        <h2>{message.subject || "Project Inquiry"}</h2>
+
+                        <p>{formatMessageDate(message.createdAt)}</p>
+                      </div>
+
+                      <div className="admin-message-card__actions">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleReadStatus(message)}
+                          title={
+                            message.status === "unread"
+                              ? "Mark as read"
+                              : "Mark as unread"
+                          }
+                        >
+                          <FaRegEnvelopeOpen aria-hidden="true" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openDeleteModal(message)}
+                          title="Delete message"
+                        >
+                          <FaTrash aria-hidden="true" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="admin-message-card__actions">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleReadStatus(message)}
-                        title={
-                          message.status === "unread"
-                            ? "Mark as read"
-                            : "Mark as unread"
-                        }
-                      >
-                        <FaRegEnvelopeOpen aria-hidden="true" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => openDeleteModal(message)}
-                        title="Delete message"
-                      >
-                        <FaTrash aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="admin-message-card__meta">
-                    <p>
-                      <strong>Name:</strong>
-                      <span>{message.name}</span>
-                    </p>
-
-                    <p>
-                      <FaPhoneAlt aria-hidden="true" />
-                      <a href={`tel:${message.phone}`}>{message.phone}</a>
-                    </p>
-
-                    {message.email && (
+                    <div className="admin-message-card__meta">
                       <p>
-                        <FaEnvelope aria-hidden="true" />
-                        <a href={`mailto:${message.email}`}>{message.email}</a>
+                        <strong>Name:</strong>
+                        <span>{message.name}</span>
                       </p>
-                    )}
-                  </div>
 
-                  <div className="admin-message-card__body">
-                    <p>{message.message}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+                      <p>
+                        <FaPhoneAlt aria-hidden="true" />
+                        <a href={`tel:${message.phone}`}>{message.phone}</a>
+                      </p>
+
+                      {message.email && (
+                        <p>
+                          <FaEnvelope aria-hidden="true" />
+                          <a href={`mailto:${message.email}`}>
+                            {message.email}
+                          </a>
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="admin-message-card__body">
+                      <p>{message.message}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {hasNextPage && (
+                <div className="admin-load-more">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? "Loading..." : "Load more"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -260,10 +289,12 @@ const AdminMessages = () => {
               </div>
 
               <span>Delete Message</span>
+
               <h2>Are you sure?</h2>
+
               <p>
                 This client inquiry will be permanently removed from the admin
-                dashboard.
+                dashboard. This action cannot be undone.
               </p>
 
               <div className="admin-message-delete-modal__preview">

@@ -17,7 +17,7 @@ import { createProjectSchema } from "../utils/seoSchemas";
 import { getProjectBySlug } from "../services/projectService";
 import { projects as fallbackProjects } from "../data/projectsData";
 import { siteData } from "../data/siteData";
-import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
+import { buildCloudinaryUrl, isCloudinaryUrl } from "../utils/cloudinaryUrl";
 import "./Projects.css";
 
 const buildSrcSet = (url, widths = [400, 800, 1200]) =>
@@ -121,6 +121,7 @@ const ProjectDetails = () => {
   ];
 
   const heroImageUrl = getProjectImage(project);
+  const heroIsCloudinary = isCloudinaryUrl(heroImageUrl);
 
   return (
     <>
@@ -137,9 +138,19 @@ const ProjectDetails = () => {
       <section className="pd-hero">
         <div className="pd-hero__media">
           <img
-            src={buildCloudinaryUrl(heroImageUrl, { width: 1600 })}
-            srcSet={buildSrcSet(heroImageUrl, [800, 1200, 1600, 2000])}
-            sizes="(max-width: 768px) 100vw, 1600px"
+            src={
+              heroIsCloudinary
+                ? buildCloudinaryUrl(heroImageUrl, { width: 1600 })
+                : heroImageUrl
+            }
+            srcSet={
+              heroIsCloudinary
+                ? buildSrcSet(heroImageUrl, [800, 1200, 1600, 2000])
+                : undefined
+            }
+            sizes={
+              heroIsCloudinary ? "(max-width: 768px) 100vw, 1600px" : undefined
+            }
             alt={`${project.title} project`}
             fetchPriority="high"
             decoding="async"
@@ -179,19 +190,34 @@ const ProjectDetails = () => {
             <div className="project-details-main">
               {galleryImages.length > 0 && (
                 <div className="project-details-gallery">
-                  {galleryImages.map((image, index) => (
-                    <img
-                      key={`${project.slug}-${index}`}
-                      src={buildCloudinaryUrl(image, { width: 800 })}
-                      srcSet={buildSrcSet(image, [400, 800, 1200])}
-                      sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
-                      alt={`${project.title} gallery ${index + 1}`}
-                      loading={index === 0 ? "eager" : "lazy"}
-                      decoding="async"
-                      width="800"
-                      height="600"
-                    />
-                  ))}
+                  {galleryImages.map((image, index) => {
+                    const isCloud = isCloudinaryUrl(image);
+                    return (
+                      <img
+                        key={`${project.slug}-${index}`}
+                        src={
+                          isCloud
+                            ? buildCloudinaryUrl(image, { width: 800 })
+                            : image
+                        }
+                        srcSet={
+                          isCloud
+                            ? buildSrcSet(image, [400, 800, 1200])
+                            : undefined
+                        }
+                        sizes={
+                          isCloud
+                            ? "(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                            : undefined
+                        }
+                        alt={`${project.title} gallery ${index + 1}`}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        width="800"
+                        height="600"
+                      />
+                    );
+                  })}
                 </div>
               )}
 

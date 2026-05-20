@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 
 import { deleteProject, getProjects } from "../../services/projectService";
@@ -17,12 +17,22 @@ const AdminProjects = () => {
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
     queryKey: ["admin-projects"],
-    queryFn: () => getProjects({ pageSize: 100 }),
+    queryFn: ({ pageParam }) =>
+      getProjects({ pageSize: 20, lastDoc: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.lastDoc ?? undefined,
   });
 
-  const adminProjects = data?.items || [];
+  const adminProjects = data?.pages?.flatMap((page) => page.items) || [];
 
   const openDeleteModal = (project) => {
     setDeleteTarget(project);
@@ -101,50 +111,70 @@ const AdminProjects = () => {
           )}
 
           {!isLoading && adminProjects.length > 0 && (
-            <div className="admin-project-list">
-              {adminProjects.map((project) => (
-                <article className="admin-project-row" key={project.id}>
-                  <img
-                    src={getProjectImage(project)}
-                    alt={project.title}
-                    loading="lazy"
-                    decoding="async"
-                  />
+            <>
+              <div className="admin-project-list">
+                {adminProjects.map((project) => (
+                  <article className="admin-project-row" key={project.id}>
+                    <img
+                      src={getProjectImage(project)}
+                      alt={project.title}
+                      loading="lazy"
+                      decoding="async"
+                    />
 
-                  <div className="admin-project-row__info">
-                    <span className={`admin-status ${project.status}`}>
-                      {project.statusText}
-                    </span>
-                    <h2>{project.title}</h2>
-                    <p>{project.location}</p>
-                  </div>
+                    <div className="admin-project-row__info">
+                      <span className={`admin-status ${project.status}`}>
+                        {project.statusText}
+                      </span>
+                      <h2>{project.title}</h2>
+                      <p>{project.location}</p>
+                    </div>
 
-                  <div className="admin-project-row__meta">
-                    <span>{project.type}</span>
-                    <strong>{project.price || "Price not added"}</strong>
-                  </div>
+                    <div className="admin-project-row__meta">
+                      <span>{project.type}</span>
+                      <strong>{project.price || "Price not added"}</strong>
+                    </div>
 
-                  <div className="admin-project-row__actions">
-                    <Link to={`/projects/${project.slug}`} title="View project">
-                      <FaEye />
-                    </Link>
-                    <Link
-                      to={`/admin/projects/${project.id}/edit`}
-                      title="Edit project"
-                    >
-                      <FaEdit />
-                    </Link>
-                    <button
-                      type="button"
-                      title="Delete project"
-                      onClick={() => openDeleteModal(project)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
+                    <div className="admin-project-row__actions">
+                      <Link
+                        to={`/projects/${project.slug}`}
+                        title="View project"
+                      >
+                        <FaEye />
+                      </Link>
+
+                      <Link
+                        to={`/admin/projects/${project.id}/edit`}
+                        title="Edit project"
+                      >
+                        <FaEdit />
+                      </Link>
+
+                      <button
+                        type="button"
+                        title="Delete project"
+                        onClick={() => openDeleteModal(project)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {hasNextPage && (
+                <div className="admin-load-more">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? "Loading..." : "Load more"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -169,7 +199,7 @@ const AdminProjects = () => {
               <h2>Are you sure?</h2>
               <p>
                 This project will be removed from the admin dashboard and public
-                website.
+                website. This action cannot be undone.
               </p>
 
               <div className="admin-project-delete-modal__preview">

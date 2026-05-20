@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   FaArrowRight,
   FaBath,
@@ -18,7 +18,7 @@ import {
   projects as fallbackProjects,
 } from "../data/projectsData";
 import heroProjectImage from "../assets/images/hero/hero-3.webp";
-import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
+import { buildCloudinaryUrl, isCloudinaryUrl } from "../utils/cloudinaryUrl";
 import "./Projects.css";
 
 const buildSrcSet = (url, widths = [400, 800, 1200]) =>
@@ -34,15 +34,24 @@ const Projects = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["projects"],
-    queryFn: () => getProjects({ pageSize: 50 }),
+    queryFn: ({ pageParam }) =>
+      getProjects({ pageSize: 12, lastDoc: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.lastDoc ?? undefined,
   });
 
-  const firestoreProjects = data?.items || [];
+  const liveItems = data?.pages?.flatMap((page) => page.items) || [];
+  const hasLiveItems = liveItems.length > 0;
 
-  const projects =
-    firestoreProjects.length > 0 ? firestoreProjects : fallbackProjects;
+  const projects = hasLiveItems ? liveItems : fallbackProjects;
 
   const filteredProjects = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -61,6 +70,8 @@ const Projects = () => {
     });
   }, [activeFilter, searchTerm, projects]);
 
+  const heroIsCloudinary = isCloudinaryUrl(heroProjectImage);
+
   return (
     <>
       <SEO
@@ -72,9 +83,21 @@ const Projects = () => {
         <section className="projects-hero">
           <div className="projects-hero__media">
             <img
-              src={buildCloudinaryUrl(heroProjectImage, { width: 1600 })}
-              srcSet={buildSrcSet(heroProjectImage, [800, 1200, 1600, 2000])}
-              sizes="(max-width: 768px) 100vw, 1600px"
+              src={
+                heroIsCloudinary
+                  ? buildCloudinaryUrl(heroProjectImage, { width: 1600 })
+                  : heroProjectImage
+              }
+              srcSet={
+                heroIsCloudinary
+                  ? buildSrcSet(heroProjectImage, [800, 1200, 1600, 2000])
+                  : undefined
+              }
+              sizes={
+                heroIsCloudinary
+                  ? "(max-width: 768px) 100vw, 1600px"
+                  : undefined
+              }
               alt="Premium property projects by Ikram Real Estate"
               fetchPriority="high"
               decoding="async"
@@ -151,86 +174,114 @@ const Projects = () => {
             )}
 
             {!isLoading && filteredProjects.length > 0 ? (
-              <div className="projects-grid">
-                {filteredProjects.map((project) => {
-                  const imageUrl = getProjectImage(project);
+              <>
+                <div className="projects-grid">
+                  {filteredProjects.map((project) => {
+                    const imageUrl = getProjectImage(project);
+                    const isCloud = isCloudinaryUrl(imageUrl);
 
-                  return (
-                    <article className="projects-card" key={project.id}>
-                      <Link
-                        to={`/projects/${project.slug}`}
-                        className="projects-card__image"
-                        aria-label={`View ${project.title} details`}
-                      >
-                        <img
-                          src={buildCloudinaryUrl(imageUrl, { width: 800 })}
-                          srcSet={buildSrcSet(imageUrl, [400, 800, 1200])}
-                          sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
-                          alt={`${project.title} property project`}
-                          loading="lazy"
-                          decoding="async"
-                          width="800"
-                          height="600"
-                        />
-
-                        <span
-                          className={`projects-card__status ${project.status}`}
-                        >
-                          {project.statusText}
-                        </span>
-                      </Link>
-
-                      <div className="projects-card__body">
-                        <p className="projects-card__location">
-                          <FaMapMarkerAlt aria-hidden="true" />
-                          <span>{project.location}</span>
-                        </p>
-
-                        <div className="projects-card__header">
-                          <h2>{project.title}</h2>
-                          <strong>
-                            {project.price || "Contact for price"}
-                          </strong>
-                        </div>
-
-                        <p className="projects-card__description">
-                          {project.description}
-                        </p>
-
-                        <div className="projects-card__features">
-                          <div>
-                            <FaBuilding aria-hidden="true" />
-                            <span>{project.type || "Property"}</span>
-                          </div>
-
-                          <div>
-                            <FaRulerCombined aria-hidden="true" />
-                            <span>{project.size || "Size on request"}</span>
-                          </div>
-
-                          <div>
-                            <FaBed aria-hidden="true" />
-                            <span>{project.beds || "N/A"} Beds</span>
-                          </div>
-
-                          <div>
-                            <FaBath aria-hidden="true" />
-                            <span>{project.baths || "N/A"} Baths</span>
-                          </div>
-                        </div>
-
+                    return (
+                      <article className="projects-card" key={project.id}>
                         <Link
                           to={`/projects/${project.slug}`}
-                          className="projects-card__link"
+                          className="projects-card__image"
+                          aria-label={`View ${project.title} details`}
                         >
-                          View Details
-                          <FaArrowRight aria-hidden="true" />
+                          <img
+                            src={
+                              isCloud
+                                ? buildCloudinaryUrl(imageUrl, { width: 800 })
+                                : imageUrl
+                            }
+                            srcSet={
+                              isCloud
+                                ? buildSrcSet(imageUrl, [400, 800, 1200])
+                                : undefined
+                            }
+                            sizes={
+                              isCloud
+                                ? "(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                                : undefined
+                            }
+                            alt={`${project.title} property project`}
+                            loading="lazy"
+                            decoding="async"
+                            width="800"
+                            height="600"
+                          />
+
+                          <span
+                            className={`projects-card__status ${project.status}`}
+                          >
+                            {project.statusText}
+                          </span>
                         </Link>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+
+                        <div className="projects-card__body">
+                          <p className="projects-card__location">
+                            <FaMapMarkerAlt aria-hidden="true" />
+                            <span>{project.location}</span>
+                          </p>
+
+                          <div className="projects-card__header">
+                            <h2>{project.title}</h2>
+                            <strong>
+                              {project.price || "Contact for price"}
+                            </strong>
+                          </div>
+
+                          <p className="projects-card__description">
+                            {project.description}
+                          </p>
+
+                          <div className="projects-card__features">
+                            <div>
+                              <FaBuilding aria-hidden="true" />
+                              <span>{project.type || "Property"}</span>
+                            </div>
+
+                            <div>
+                              <FaRulerCombined aria-hidden="true" />
+                              <span>{project.size || "Size on request"}</span>
+                            </div>
+
+                            <div>
+                              <FaBed aria-hidden="true" />
+                              <span>{project.beds || "N/A"} Beds</span>
+                            </div>
+
+                            <div>
+                              <FaBath aria-hidden="true" />
+                              <span>{project.baths || "N/A"} Baths</span>
+                            </div>
+                          </div>
+
+                          <Link
+                            to={`/projects/${project.slug}`}
+                            className="projects-card__link"
+                          >
+                            View Details
+                            <FaArrowRight aria-hidden="true" />
+                          </Link>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                {hasLiveItems && hasNextPage && (
+                  <div className="projects-load-more">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? "Loading..." : "Load more"}
+                    </button>
+                  </div>
+                )}
+              </>
             ) : null}
 
             {!isLoading && filteredProjects.length === 0 && (

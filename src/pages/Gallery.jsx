@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { FaExpandAlt, FaImages } from "react-icons/fa";
 
 import { getGalleryImages } from "../services/galleryService";
@@ -9,7 +9,7 @@ import fallbackGallery2 from "../assets/images/hero/hero-2.webp";
 import fallbackGallery3 from "../assets/images/hero/hero-3.webp";
 import fallbackGallery4 from "../assets/images/hero/hero-4.webp";
 import fallbackGallery5 from "../assets/images/hero/hero-5.webp";
-import { buildCloudinaryUrl } from "../utils/cloudinaryUrl";
+import { buildCloudinaryUrl, isCloudinaryUrl } from "../utils/cloudinaryUrl";
 import "./Gallery.css";
 import SEO from "../components/SEO";
 
@@ -67,13 +67,24 @@ const Gallery = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["gallery"],
-    queryFn: () => getGalleryImages({ pageSize: 50 }),
+    queryFn: ({ pageParam }) =>
+      getGalleryImages({ pageSize: 12, lastDoc: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.lastDoc ?? undefined,
   });
 
-  const galleryItems =
-    data?.items?.length > 0 ? data.items : fallbackGalleryItems;
+  const liveItems = data?.pages?.flatMap((page) => page.items) || [];
+  const hasLiveItems = liveItems.length > 0;
+
+  const galleryItems = hasLiveItems ? liveItems : fallbackGalleryItems;
 
   const galleryFilters = useMemo(() => {
     const categories = galleryItems
@@ -91,7 +102,7 @@ const Gallery = () => {
     setSelectedImage(null);
   };
 
-  const heroUrl = galleryHeroImage;
+  const heroIsCloudinary = isCloudinaryUrl(galleryHeroImage);
 
   return (
     <>
@@ -104,9 +115,21 @@ const Gallery = () => {
         <section className="gallery-hero">
           <div className="gallery-hero__media">
             <img
-              src={buildCloudinaryUrl(heroUrl, { width: 1600 })}
-              srcSet={buildSrcSet(heroUrl, [800, 1200, 1600, 2000])}
-              sizes="(max-width: 768px) 100vw, 1600px"
+              src={
+                heroIsCloudinary
+                  ? buildCloudinaryUrl(galleryHeroImage, { width: 1600 })
+                  : galleryHeroImage
+              }
+              srcSet={
+                heroIsCloudinary
+                  ? buildSrcSet(galleryHeroImage, [800, 1200, 1600, 2000])
+                  : undefined
+              }
+              sizes={
+                heroIsCloudinary
+                  ? "(max-width: 768px) 100vw, 1600px"
+                  : undefined
+              }
               alt="Ikram Real Estate gallery showcase"
               fetchPriority="high"
               decoding="async"
@@ -149,7 +172,6 @@ const Gallery = () => {
                 <div>
                   <FaImages aria-hidden="true" />
                 </div>
-
                 <h2>Loading gallery...</h2>
                 <p>Please wait while we load the latest project images.</p>
               </div>
@@ -160,7 +182,6 @@ const Gallery = () => {
                 <div>
                   <FaImages aria-hidden="true" />
                 </div>
-
                 <h2>Live gallery unavailable</h2>
                 <p>Showing saved gallery images.</p>
               </div>
@@ -189,6 +210,7 @@ const Gallery = () => {
                   <div className="gallery-grid">
                     {filteredItems.map((item) => {
                       const imageUrl = getGalleryImageUrl(item);
+                      const isCloud = isCloudinaryUrl(imageUrl);
 
                       return (
                         <article
@@ -202,9 +224,21 @@ const Gallery = () => {
                             aria-label={`View ${getCleanGalleryTitle(item)}`}
                           >
                             <img
-                              src={buildCloudinaryUrl(imageUrl, { width: 800 })}
-                              srcSet={buildSrcSet(imageUrl, [400, 800, 1200])}
-                              sizes="(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                              src={
+                                isCloud
+                                  ? buildCloudinaryUrl(imageUrl, { width: 800 })
+                                  : imageUrl
+                              }
+                              srcSet={
+                                isCloud
+                                  ? buildSrcSet(imageUrl, [400, 800, 1200])
+                                  : undefined
+                              }
+                              sizes={
+                                isCloud
+                                  ? "(max-width: 600px) 90vw, (max-width: 1200px) 45vw, 600px"
+                                  : undefined
+                              }
                               alt={item.alt || getCleanGalleryTitle(item)}
                               loading="lazy"
                               decoding="async"
@@ -230,9 +264,21 @@ const Gallery = () => {
                     <div>
                       <FaImages aria-hidden="true" />
                     </div>
-
                     <h2>No images found</h2>
                     <p>Try choosing a different gallery category.</p>
+                  </div>
+                )}
+
+                {hasLiveItems && hasNextPage && (
+                  <div className="gallery-load-more">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? "Loading..." : "Load more"}
+                    </button>
                   </div>
                 )}
               </>

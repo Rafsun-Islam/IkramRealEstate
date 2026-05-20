@@ -9,6 +9,7 @@ import {
   uploadGalleryImage,
 } from "../../services/galleryService";
 import { formatFileSize, optimizeImageToWebP } from "../../utils/imageUtils";
+import { buildCloudinaryUrl, isCloudinaryUrl } from "../../utils/cloudinaryUrl";
 import "./AdminGallery.css";
 
 const galleryCategories = [
@@ -230,37 +231,44 @@ const AdminGallery = () => {
 
         {!isLoading && filteredImages.length > 0 && (
           <div className="admin-gallery-grid">
-            {filteredImages.map((image) => (
-              <article className="admin-gallery-card" key={image.id}>
-                <div className="admin-gallery-card__image">
-                  <img
-                    src={image.url}
-                    alt={getCleanGalleryTitle(image)}
-                    loading="lazy"
-                    decoding="async"
-                  />
+            {filteredImages.map((image) => {
+              const isCloud = isCloudinaryUrl(image.url);
+              const thumbUrl = isCloud
+                ? buildCloudinaryUrl(image.url, { width: 600 })
+                : image.url;
 
-                  <span>{image.category || "General"}</span>
+              return (
+                <article className="admin-gallery-card" key={image.id}>
+                  <div className="admin-gallery-card__image">
+                    <img
+                      src={thumbUrl}
+                      alt={getCleanGalleryTitle(image)}
+                      loading="lazy"
+                      decoding="async"
+                    />
 
-                  <button
-                    type="button"
-                    onClick={() => openDeleteModal(image)}
-                    aria-label="Delete gallery image"
-                  >
-                    <FaTrash aria-hidden="true" />
-                  </button>
-                </div>
+                    <span>{image.category || "General"}</span>
 
-                <div className="admin-gallery-card__body">
-                  <h2>{getCleanGalleryTitle(image)}</h2>
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(image)}
+                      aria-label="Delete gallery image"
+                    >
+                      <FaTrash aria-hidden="true" />
+                    </button>
+                  </div>
 
-                  <p>
-                    <FaImage aria-hidden="true" />
-                    {image.bytes ? formatFileSize(image.bytes) : "Optimized"}
-                  </p>
-                </div>
-              </article>
-            ))}
+                  <div className="admin-gallery-card__body">
+                    <h2>{getCleanGalleryTitle(image)}</h2>
+
+                    <p>
+                      <FaImage aria-hidden="true" />
+                      {image.bytes ? formatFileSize(image.bytes) : "Optimized"}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
 
@@ -287,7 +295,11 @@ const AdminGallery = () => {
 
               <div className="admin-delete-modal__preview">
                 <img
-                  src={deleteTarget.url}
+                  src={
+                    isCloudinaryUrl(deleteTarget.url)
+                      ? buildCloudinaryUrl(deleteTarget.url, { width: 800 })
+                      : deleteTarget.url
+                  }
                   alt={getCleanGalleryTitle(deleteTarget)}
                 />
 
